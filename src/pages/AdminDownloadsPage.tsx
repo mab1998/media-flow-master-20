@@ -1,166 +1,165 @@
 
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { api } from '@/api/mockApi';
-import { format, parseISO } from 'date-fns';
-import { Download, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Search, Filter, DownloadCloud } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
+import { useApiRequest } from '@/api/hooks/useApiRequest';
+import { api } from '@/api/mockApi';
+import { Pagination } from '@/components/ui/pagination';
+import { DownloadDetailsDialog } from '@/components/admin/downloads/DownloadDetailsDialog';
+import { ExportDataButton } from '@/components/admin/downloads/ExportDataButton';
 
-const AdminDownloadsPage: React.FC = () => {
-  const [page, setPage] = React.useState(1);
-  const limit = 10;
-  const [searchTerm, setSearchTerm] = React.useState('');
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['admin-downloads', page, limit],
-    queryFn: () => api.getDownloads({ page, limit })
-  });
-
-  const handlePageChange = (newPage: number) => {
-    if (newPage > 0 && (!data || newPage <= data.totalPages)) {
-      setPage(newPage);
+const AdminDownloadsPage = () => {
+  const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredDownloads, setFilteredDownloads] = useState<any[]>([]);
+  const [hasSearched, setHasSearched] = useState(false);
+  
+  const { execute: fetchDownloads, isLoading, data } = useApiRequest(
+    api.getDownloads,
+    {
+      errorMessage: 'Failed to load downloads',
     }
+  );
+  
+  useEffect(() => {
+    fetchDownloads({ page });
+  }, [page]);
+  
+  const handleSearch = () => {
+    if (!data || !data.downloads) return;
+    
+    setHasSearched(true);
+    
+    if (!searchTerm.trim()) {
+      setFilteredDownloads(data.downloads);
+      return;
+    }
+    
+    const lowercaseSearch = searchTerm.toLowerCase();
+    const results = data.downloads.filter(download => 
+      download.userName.toLowerCase().includes(lowercaseSearch) || 
+      download.videoTitle.toLowerCase().includes(lowercaseSearch) ||
+      download.platform.toLowerCase().includes(lowercaseSearch)
+    );
+    
+    setFilteredDownloads(results);
   };
-
+  
+  const handleRefresh = () => {
+    fetchDownloads({ page });
+    setSearchTerm('');
+    setHasSearched(false);
+  };
+  
+  const downloadsToDisplay = hasSearched ? filteredDownloads : (data?.downloads || []);
+  
   return (
     <AdminLayout>
-      <div className="flex items-center justify-between mb-6">
-        <div>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Downloads</h1>
-          <p className="text-muted-foreground">View all downloads across the platform</p>
+          <div className="flex gap-2">
+            <ExportDataButton format="csv" filename="omnivideo-downloads" />
+            <ExportDataButton format="json" filename="omnivideo-downloads" />
+          </div>
         </div>
-        <Button>
-          <Download className="h-4 w-4 mr-2" />
-          Export Data
-        </Button>
-      </div>
-
-      <div className="mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search downloads..."
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Downloads</CardTitle>
-          <CardDescription>A list of all recent downloads across the platform</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="text-center py-4">Loading downloads...</div>
-          ) : isError ? (
-            <div className="text-center py-4 text-destructive">Error loading downloads</div>
-          ) : (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Video</TableHead>
-                    <TableHead>Platform</TableHead>
-                    <TableHead>Quality</TableHead>
-                    <TableHead>Size</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data && data.downloads.length > 0 ? (
-                    data.downloads
-                      .filter(download => 
-                        searchTerm === '' || 
-                        download.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        download.videoTitle.toLowerCase().includes(searchTerm.toLowerCase())
-                      )
-                      .map((download) => (
-                        <TableRow key={download.id}>
-                          <TableCell>{download.userName}</TableCell>
-                          <TableCell className="max-w-[200px] truncate">{download.videoTitle}</TableCell>
-                          <TableCell>{download.platform}</TableCell>
-                          <TableCell>{download.quality}</TableCell>
-                          <TableCell>{download.fileSize}</TableCell>
-                          <TableCell>{format(parseISO(download.downloadDate), 'MMM d, yyyy, HH:mm')}</TableCell>
-                          <TableCell>
-                            <Badge variant={download.status === 'completed' ? 'success' : 'destructive'}>
-                              {download.status}
-                            </Badge>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Download History</CardTitle>
+            <CardDescription>View and manage all video downloads across the platform.</CardDescription>
+            
+            <div className="flex gap-2 mt-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search downloads..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                />
+              </div>
+              <Button onClick={handleSearch}>Search</Button>
+              {hasSearched && (
+                <Button variant="outline" onClick={handleRefresh}>
+                  Reset
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="flex justify-center py-8">Loading downloads...</div>
+            ) : (
+              <>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>User</TableHead>
+                        <TableHead>Video Title</TableHead>
+                        <TableHead>Platform</TableHead>
+                        <TableHead>Quality</TableHead>
+                        <TableHead>Size</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {downloadsToDisplay.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-8">
+                            {hasSearched ? 'No downloads match your search criteria.' : 'No downloads found.'}
                           </TableCell>
                         </TableRow>
-                      ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center">
-                        No downloads found
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-
-              {data && data.totalPages > 1 && (
-                <div className="mt-4">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious 
-                          onClick={() => handlePageChange(page - 1)}
-                          className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                      
-                      {Array.from({ length: data.totalPages }, (_, i) => i + 1).map(pageNum => (
-                        <PaginationItem key={pageNum}>
-                          <PaginationLink
-                            isActive={pageNum === page}
-                            onClick={() => handlePageChange(pageNum)}
-                            className="cursor-pointer"
-                          >
-                            {pageNum}
-                          </PaginationLink>
-                        </PaginationItem>
-                      ))}
-                      
-                      <PaginationItem>
-                        <PaginationNext 
-                          onClick={() => handlePageChange(page + 1)}
-                          className={page === data.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
+                      ) : (
+                        downloadsToDisplay.map((download) => (
+                          <TableRow key={download.id}>
+                            <TableCell className="font-medium">{download.userName}</TableCell>
+                            <TableCell className="max-w-[200px] truncate" title={download.videoTitle}>
+                              {download.videoTitle}
+                            </TableCell>
+                            <TableCell>{download.platform}</TableCell>
+                            <TableCell>{download.quality}</TableCell>
+                            <TableCell>{download.fileSize}</TableCell>
+                            <TableCell>{format(new Date(download.downloadDate), 'PPp')}</TableCell>
+                            <TableCell>
+                              <Badge variant={download.status === 'completed' ? 'default' : 'destructive'}>
+                                {download.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <DownloadDetailsDialog downloadId={download.id} />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+                
+                {data && !hasSearched && (
+                  <Pagination 
+                    currentPage={page}
+                    totalPages={data.totalPages || 1}
+                    onPageChange={setPage}
+                    className="mt-4"
+                  />
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </AdminLayout>
   );
 };

@@ -279,5 +279,122 @@ export const adminService = {
       limit,
       totalPages: Math.ceil(mockDownloads.length / limit)
     };
+  },
+
+  // Get a single invoice by ID
+  getInvoiceById: async (invoiceId: string): Promise<Invoice> => {
+    // Check authentication
+    const token = getAuthToken();
+    if (!token) {
+      throw createApiError(401, 'Not authenticated');
+    }
+
+    // Simulate API delay
+    await delay(500);
+
+    // Find invoice by ID
+    const invoice = mockInvoices.find(invoice => invoice.id === invoiceId);
+    
+    if (!invoice) {
+      throw createApiError(404, 'Invoice not found');
+    }
+
+    return invoice;
+  },
+
+  // Get a single download by ID
+  getDownloadById: async (downloadId: string): Promise<DownloadRecord> => {
+    // Check authentication
+    const token = getAuthToken();
+    if (!token) {
+      throw createApiError(401, 'Not authenticated');
+    }
+
+    // Simulate API delay
+    await delay(500);
+
+    // Find download by ID
+    const download = mockDownloads.find(download => download.id === downloadId);
+    
+    if (!download) {
+      throw createApiError(404, 'Download record not found');
+    }
+
+    return download;
+  },
+
+  // Export downloads data
+  exportDownloads: async (format: 'csv' | 'json' = 'csv'): Promise<Blob> => {
+    // Check authentication
+    const token = getAuthToken();
+    if (!token) {
+      throw createApiError(401, 'Not authenticated');
+    }
+
+    // Simulate API delay
+    await delay(1000);
+    
+    // In a real application, this would generate a properly formatted file
+    // Here we're just converting the mock data to the requested format
+    
+    let content: string;
+    let mimeType: string;
+    
+    if (format === 'csv') {
+      // Convert data to CSV
+      const header = Object.keys(mockDownloads[0]).join(',');
+      const rows = mockDownloads.map(item => Object.values(item).join(','));
+      content = [header, ...rows].join('\n');
+      mimeType = 'text/csv';
+    } else {
+      // JSON format
+      content = JSON.stringify(mockDownloads, null, 2);
+      mimeType = 'application/json';
+    }
+    
+    return new Blob([content], { type: mimeType });
+  },
+
+  // Export invoice data
+  exportInvoice: async (invoiceId: string, format: 'pdf' | 'csv' | 'json' = 'pdf'): Promise<Blob> => {
+    // Check authentication
+    const token = getAuthToken();
+    if (!token) {
+      throw createApiError(401, 'Not authenticated');
+    }
+
+    // Simulate API delay
+    await delay(800);
+    
+    // Find invoice by ID
+    const invoice = mockInvoices.find(invoice => invoice.id === invoiceId);
+    
+    if (!invoice) {
+      throw createApiError(404, 'Invoice not found');
+    }
+    
+    // In a real application, this would generate a properly formatted file
+    // Here we're just converting the mock data to the requested format
+    
+    let content: string;
+    let mimeType: string;
+    
+    if (format === 'pdf') {
+      // Mock PDF content (just text for demo)
+      content = `INVOICE #${invoice.id}\n\nDate: ${invoice.createdAt}\nCustomer: ${invoice.userName}\nEmail: ${invoice.userEmail}\nPlan: ${invoice.planName}\nAmount: $${invoice.amount}\nStatus: ${invoice.status}`;
+      mimeType = 'application/pdf';
+    } else if (format === 'csv') {
+      // Convert data to CSV
+      const header = Object.keys(invoice).join(',');
+      const row = Object.values(invoice).join(',');
+      content = [header, row].join('\n');
+      mimeType = 'text/csv';
+    } else {
+      // JSON format
+      content = JSON.stringify(invoice, null, 2);
+      mimeType = 'application/json';
+    }
+    
+    return new Blob([content], { type: mimeType });
   }
 };

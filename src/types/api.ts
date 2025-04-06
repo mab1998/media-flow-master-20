@@ -1,49 +1,19 @@
 
-export type Platform = 'YouTube' | 'TikTok' | 'Facebook' | 'Instagram' | 'Twitter' | 'Vimeo';
-
-export type VideoQuality = '240p' | '360p' | '480p' | '720p' | '1080p' | '2K' | '4K';
-
-export type VideoFormat = {
-  id: string;
-  label: string;
-  quality: VideoQuality;
-  format: string;
-  fileSize: string;
+// API Response Types
+export type ApiResponse<T> = {
+  data: T;
+  success: boolean;
+  message?: string;
 };
 
-export type VideoInfo = {
-  id: string;
-  url: string;
-  title: string;
-  description: string;
-  thumbnailUrl: string;
-  platform: Platform;
-  author: string;
-  duration: string;
-  viewCount: string;
-  availableFormats: VideoFormat[];
+// API Error Type
+export type ApiError = {
+  statusCode: number;
+  message: string;
+  errors?: Record<string, string[]>;
 };
 
-export type UserPlan = 'Free' | 'Pro' | 'Unlimited';
-
-export type UserDownload = {
-  id: string;
-  videoInfo: VideoInfo;
-  downloadDate: string;
-  format: VideoFormat;
-  status: 'completed' | 'failed';
-};
-
-export type User = {
-  id: string;
-  email: string;
-  name: string;
-  plan: UserPlan;
-  downloads: UserDownload[];
-  downloadCount: number;
-  registrationDate: string;
-};
-
+// Authentication Types
 export type LoginRequest = {
   email: string;
   password: string;
@@ -61,23 +31,70 @@ export type AuthResponse = {
   user: User;
 };
 
-export type ApiError = {
-  statusCode: number;
-  message: string;
-  errors?: Record<string, string[]>;
+// User Types
+export type User = {
+  id: string;
+  email: string;
+  name: string;
+  plan: string;
+  downloads: UserDownload[];
+  downloadCount: number;
+  registrationDate: string;
+};
+
+// Download Types
+export type Platform = 'YouTube' | 'TikTok' | 'Facebook' | 'Instagram' | 'Twitter' | 'Vimeo';
+
+export type VideoQuality = '240p' | '360p' | '480p' | '720p' | '1080p' | '2K' | '4K';
+
+export type VideoInfo = {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  thumbnailUrl: string;
+  platform: Platform;
+  author: string;
+  duration: string;
+  viewCount: string;
+  availableFormats: VideoFormat[];
+};
+
+export type VideoFormat = {
+  id: string;
+  label: string;
+  quality: VideoQuality;
+  format: string;
+  fileSize: string;
+};
+
+export type UserDownload = {
+  id: string;
+  videoInfo: VideoInfo;
+  downloadDate: string;
+  format: VideoFormat;
+  status: 'completed' | 'failed';
+};
+
+// Content Types
+export type Feature = {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
 };
 
 export type PricingPlan = {
   id: string;
-  name: UserPlan;
+  name: string;
   price: string;
   billingPeriod: string;
   description: string;
   features: string[];
   isPopular?: boolean;
   downloadLimit: number | 'unlimited';
-  qualityLimit: VideoQuality;
-  platformLimit?: number | 'all';
+  qualityLimit: string;
+  platformLimit?: 'all' | string[];
 };
 
 export type FAQItem = {
@@ -86,13 +103,7 @@ export type FAQItem = {
   answer: string;
 };
 
-export type Feature = {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-};
-
+// Admin Types
 export type SubscriptionPlan = {
   id: string;
   name: string;

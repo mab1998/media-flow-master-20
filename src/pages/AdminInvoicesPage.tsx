@@ -1,169 +1,191 @@
 
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Search, Download } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { api } from '@/api/mockApi';
-import { format } from 'date-fns';
-import { Download, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { format } from 'date-fns';
+import { useApiRequest } from '@/api/hooks/useApiRequest';
+import { api } from '@/api/mockApi';
+import { Pagination } from '@/components/ui/pagination';
+import { InvoiceDetailsDialog } from '@/components/admin/invoices/InvoiceDetailsDialog';
+import { ExportDataButton } from '@/components/admin/downloads/ExportDataButton';
+import { mockInvoices } from '@/api/data/adminData';
 
-const AdminInvoicesPage: React.FC = () => {
-  const [page, setPage] = React.useState(1);
-  const limit = 10;
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['admin-invoices', page, limit],
-    queryFn: () => api.getInvoices({ page, limit })
-  });
-
-  const getStatusColor = (status: string) => {
+const AdminInvoicesPage = () => {
+  const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredInvoices, setFilteredInvoices] = useState<any[]>([]);
+  const [hasSearched, setHasSearched] = useState(false);
+  
+  const { execute: fetchInvoices, isLoading, data } = useApiRequest(
+    api.getInvoices,
+    {
+      errorMessage: 'Failed to load invoices',
+    }
+  );
+  
+  useEffect(() => {
+    fetchInvoices({ page });
+  }, [page]);
+  
+  const handleSearch = () => {
+    if (!data || !data.invoices) return;
+    
+    setHasSearched(true);
+    
+    if (!searchTerm.trim()) {
+      setFilteredInvoices(data.invoices);
+      return;
+    }
+    
+    const lowercaseSearch = searchTerm.toLowerCase();
+    const results = data.invoices.filter(invoice => 
+      invoice.userName.toLowerCase().includes(lowercaseSearch) || 
+      invoice.userEmail.toLowerCase().includes(lowercaseSearch) ||
+      invoice.planName.toLowerCase().includes(lowercaseSearch) ||
+      invoice.id.toLowerCase().includes(lowercaseSearch)
+    );
+    
+    setFilteredInvoices(results);
+  };
+  
+  const handleRefresh = () => {
+    fetchInvoices({ page });
+    setSearchTerm('');
+    setHasSearched(false);
+  };
+  
+  const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case 'paid':
-        return 'success';
+        return 'default';
       case 'pending':
-        return 'warning';
+        return 'outline';
       case 'failed':
         return 'destructive';
       case 'refunded':
         return 'secondary';
       default:
-        return 'default';
+        return 'outline';
     }
   };
-
-  const handlePageChange = (newPage: number) => {
-    if (newPage > 0 && (!data || newPage <= data.totalPages)) {
-      setPage(newPage);
-    }
-  };
-
+  
+  const invoicesToDisplay = hasSearched ? filteredInvoices : (data?.invoices || []);
+  
   return (
     <AdminLayout>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Invoice History</h1>
-          <p className="text-muted-foreground">View and manage customer invoices</p>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Invoices</h1>
+          <div className="flex gap-2">
+            <ExportDataButton 
+              format="csv" 
+              filename="omnivideo-invoices" 
+              data={mockInvoices} 
+            />
+            <ExportDataButton 
+              format="json" 
+              filename="omnivideo-invoices" 
+              data={mockInvoices} 
+            />
+          </div>
         </div>
-        <Button>
-          <Download className="h-4 w-4 mr-2" />
-          Export Invoices
-        </Button>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Invoices</CardTitle>
-          <CardDescription>A list of all customer invoices</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="text-center py-4">Loading invoices...</div>
-          ) : isError ? (
-            <div className="text-center py-4 text-destructive">Error loading invoices</div>
-          ) : (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Invoice ID</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Plan</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data && data.invoices.length > 0 ? (
-                    data.invoices.map((invoice) => (
-                      <TableRow key={invoice.id}>
-                        <TableCell>{invoice.id}</TableCell>
-                        <TableCell>
-                          <div className="font-medium">{invoice.userName}</div>
-                          <div className="text-sm text-muted-foreground">{invoice.userEmail}</div>
-                        </TableCell>
-                        <TableCell>{invoice.planName}</TableCell>
-                        <TableCell>${invoice.amount.toFixed(2)}</TableCell>
-                        <TableCell>
-                          <Badge variant={getStatusColor(invoice.status) as any}>
-                            {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{format(new Date(invoice.createdAt), 'MMM d, yyyy')}</TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" className="h-8">
-                            <FileText className="h-4 w-4 mr-2" />
-                            View
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center">
-                        No invoices found
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-
-              {data && data.totalPages > 1 && (
-                <div className="mt-4">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious 
-                          onClick={() => handlePageChange(page - 1)}
-                          className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                      
-                      {Array.from({ length: data.totalPages }, (_, i) => i + 1).map(pageNum => (
-                        <PaginationItem key={pageNum}>
-                          <PaginationLink
-                            isActive={pageNum === page}
-                            onClick={() => handlePageChange(pageNum)}
-                            className="cursor-pointer"
-                          >
-                            {pageNum}
-                          </PaginationLink>
-                        </PaginationItem>
-                      ))}
-                      
-                      <PaginationItem>
-                        <PaginationNext 
-                          onClick={() => handlePageChange(page + 1)}
-                          className={page === data.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Invoice History</CardTitle>
+            <CardDescription>View and manage all payment invoices.</CardDescription>
+            
+            <div className="flex gap-2 mt-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search invoices..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                />
+              </div>
+              <Button onClick={handleSearch}>Search</Button>
+              {hasSearched && (
+                <Button variant="outline" onClick={handleRefresh}>
+                  Reset
+                </Button>
               )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="flex justify-center py-8">Loading invoices...</div>
+            ) : (
+              <>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Invoice #</TableHead>
+                        <TableHead>Customer</TableHead>
+                        <TableHead>Plan</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Payment Method</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {invoicesToDisplay.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-8">
+                            {hasSearched ? 'No invoices match your search criteria.' : 'No invoices found.'}
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        invoicesToDisplay.map((invoice) => (
+                          <TableRow key={invoice.id}>
+                            <TableCell className="font-medium">{invoice.id}</TableCell>
+                            <TableCell>
+                              <div>{invoice.userName}</div>
+                              <div className="text-sm text-muted-foreground">{invoice.userEmail}</div>
+                            </TableCell>
+                            <TableCell>{invoice.planName}</TableCell>
+                            <TableCell>${invoice.amount.toFixed(2)}</TableCell>
+                            <TableCell>{format(new Date(invoice.createdAt), 'PP')}</TableCell>
+                            <TableCell className="capitalize">{invoice.paymentMethod.replace('_', ' ')}</TableCell>
+                            <TableCell>
+                              <Badge variant={getStatusBadgeVariant(invoice.status)}>
+                                {invoice.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <InvoiceDetailsDialog invoiceId={invoice.id} />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+                
+                {data && !hasSearched && (
+                  <Pagination 
+                    currentPage={page}
+                    totalPages={data.totalPages || 1}
+                    onPageChange={setPage}
+                    className="mt-4"
+                  />
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </AdminLayout>
   );
 };

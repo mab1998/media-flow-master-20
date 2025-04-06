@@ -92,3 +92,41 @@ export type Feature = {
   description: string;
   icon: string;
 };
+
+export type SubscriptionPlan = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  billingCycle: 'monthly' | 'annually';
+  features: string[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Invoice = {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  planId: string;
+  planName: string;
+  amount: number;
+  status: 'paid' | 'pending' | 'failed' | 'refunded';
+  paymentMethod: 'credit_card' | 'paypal' | 'bank_transfer';
+  transactionId: string;
+  createdAt: string;
+};
+
+export type DownloadRecord = {
+  id: string;
+  userId: string;
+  userName: string;
+  videoTitle: string;
+  platform: string;
+  quality: string;
+  fileSize: string;
+  downloadDate: string;
+  status: 'completed' | 'failed';
+};

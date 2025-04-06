@@ -84,3 +84,285 @@ export const mockUsersList: User[] = [
     registrationDate: '2025-02-02T00:00:00Z'
   }
 ];
+
+// Mock subscription plans data
+export type SubscriptionPlan = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  billingCycle: 'monthly' | 'annually';
+  features: string[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const mockPlans: SubscriptionPlan[] = [
+  {
+    id: '1',
+    name: 'Free',
+    description: 'Basic features for occasional users',
+    price: 0,
+    billingCycle: 'monthly',
+    features: ['720p quality', '5 downloads per day', 'Basic support'],
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: '2',
+    name: 'Pro',
+    description: 'Advanced features for regular users',
+    price: 9.99,
+    billingCycle: 'monthly',
+    features: ['1080p quality', '30 downloads per day', 'Priority support', 'No ads'],
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-03-15T00:00:00Z'
+  },
+  {
+    id: '3',
+    name: 'Pro Annual',
+    description: 'Pro features with annual billing',
+    price: 99.99,
+    billingCycle: 'annually',
+    features: ['1080p quality', '30 downloads per day', 'Priority support', 'No ads', '2 months free'],
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-03-15T00:00:00Z'
+  },
+  {
+    id: '4',
+    name: 'Unlimited',
+    description: 'All features for power users',
+    price: 19.99,
+    billingCycle: 'monthly',
+    features: ['4K quality', 'Unlimited downloads', 'Premium support', 'Batch downloading', 'Early access to new features'],
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-02-20T00:00:00Z'
+  },
+  {
+    id: '5',
+    name: 'Unlimited Annual',
+    description: 'Unlimited features with annual billing',
+    price: 199.99,
+    billingCycle: 'annually',
+    features: ['4K quality', 'Unlimited downloads', 'Premium support', 'Batch downloading', 'Early access to new features', '2 months free'],
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-02-20T00:00:00Z'
+  },
+  {
+    id: '6',
+    name: 'Student Pro',
+    description: 'Pro features for students at a discounted rate',
+    price: 4.99,
+    billingCycle: 'monthly',
+    features: ['1080p quality', '30 downloads per day', 'Priority support', 'No ads', 'Student verification required'],
+    isActive: false,
+    createdAt: '2024-03-01T00:00:00Z',
+    updatedAt: '2024-03-15T00:00:00Z'
+  }
+];
+
+// Mock invoice data
+export type Invoice = {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  planId: string;
+  planName: string;
+  amount: number;
+  status: 'paid' | 'pending' | 'failed' | 'refunded';
+  paymentMethod: 'credit_card' | 'paypal' | 'bank_transfer';
+  transactionId: string;
+  createdAt: string;
+};
+
+export const mockInvoices: Invoice[] = [
+  {
+    id: 'INV-001',
+    userId: '1',
+    userName: 'John Doe',
+    userEmail: 'john@example.com',
+    planId: '2',
+    planName: 'Pro',
+    amount: 9.99,
+    status: 'paid',
+    paymentMethod: 'credit_card',
+    transactionId: 'TXN-0001',
+    createdAt: '2025-03-01T00:00:00Z'
+  },
+  {
+    id: 'INV-002',
+    userId: '2',
+    userName: 'Sarah Johnson',
+    userEmail: 'sarah@example.com',
+    planId: '5',
+    planName: 'Unlimited Annual',
+    amount: 199.99,
+    status: 'paid',
+    paymentMethod: 'paypal',
+    transactionId: 'TXN-0002',
+    createdAt: '2025-02-15T00:00:00Z'
+  },
+  {
+    id: 'INV-003',
+    userId: '4',
+    userName: 'Emily Davis',
+    userEmail: 'emily@example.com',
+    planId: '2',
+    planName: 'Pro',
+    amount: 9.99,
+    status: 'paid',
+    paymentMethod: 'credit_card',
+    transactionId: 'TXN-0003',
+    createdAt: '2025-03-18T00:00:00Z'
+  },
+  {
+    id: 'INV-004',
+    userId: '5',
+    userName: 'Robert Brown',
+    userEmail: 'robert@example.com',
+    planId: '2',
+    planName: 'Pro',
+    amount: 9.99,
+    status: 'failed',
+    paymentMethod: 'credit_card',
+    transactionId: 'TXN-0004',
+    createdAt: '2025-04-01T00:00:00Z'
+  },
+  {
+    id: 'INV-005',
+    userId: '2',
+    userName: 'Sarah Johnson',
+    userEmail: 'sarah@example.com',
+    planId: '5',
+    planName: 'Unlimited Annual',
+    amount: 199.99,
+    status: 'refunded',
+    paymentMethod: 'paypal',
+    transactionId: 'TXN-0005',
+    createdAt: '2024-08-15T00:00:00Z'
+  },
+  {
+    id: 'INV-006',
+    userId: '3',
+    userName: 'Mike Wilson',
+    userEmail: 'mike@example.com',
+    planId: '2',
+    planName: 'Pro',
+    amount: 9.99,
+    status: 'pending',
+    paymentMethod: 'bank_transfer',
+    transactionId: 'TXN-0006',
+    createdAt: '2025-04-05T00:00:00Z'
+  }
+];
+
+// Mock download data
+export type DownloadRecord = {
+  id: string;
+  userId: string;
+  userName: string;
+  videoTitle: string;
+  platform: string;
+  quality: string;
+  fileSize: string;
+  downloadDate: string;
+  status: 'completed' | 'failed';
+};
+
+export const mockDownloads: DownloadRecord[] = [
+  {
+    id: 'DL-001',
+    userId: '1',
+    userName: 'John Doe',
+    videoTitle: 'How to Make Pasta Carbonara',
+    platform: 'YouTube',
+    quality: '1080p',
+    fileSize: '256 MB',
+    downloadDate: '2025-04-05T14:30:00Z',
+    status: 'completed'
+  },
+  {
+    id: 'DL-002',
+    userId: '2',
+    userName: 'Sarah Johnson',
+    videoTitle: 'Travel Vlog: Tokyo 2025',
+    platform: 'YouTube',
+    quality: '4K',
+    fileSize: '1.2 GB',
+    downloadDate: '2025-04-05T12:45:00Z',
+    status: 'completed'
+  },
+  {
+    id: 'DL-003',
+    userId: '3',
+    userName: 'Mike Wilson',
+    videoTitle: 'Quick Workout Routine',
+    platform: 'TikTok',
+    quality: '720p',
+    fileSize: '45 MB',
+    downloadDate: '2025-04-05T10:15:00Z',
+    status: 'completed'
+  },
+  {
+    id: 'DL-004',
+    userId: '4',
+    userName: 'Emily Davis',
+    videoTitle: 'Product Review: New Smartphone',
+    platform: 'YouTube',
+    quality: '1080p',
+    fileSize: '350 MB',
+    downloadDate: '2025-04-04T18:20:00Z',
+    status: 'completed'
+  },
+  {
+    id: 'DL-005',
+    userId: '5',
+    userName: 'Robert Brown',
+    videoTitle: 'Guitar Tutorial: Beginner Chords',
+    platform: 'Vimeo',
+    quality: '720p',
+    fileSize: '180 MB',
+    downloadDate: '2025-04-04T15:30:00Z',
+    status: 'failed'
+  },
+  {
+    id: 'DL-006',
+    userId: '2',
+    userName: 'Sarah Johnson',
+    videoTitle: 'DIY Home Decor Ideas',
+    platform: 'Instagram',
+    quality: '1080p',
+    fileSize: '210 MB',
+    downloadDate: '2025-04-04T09:45:00Z',
+    status: 'completed'
+  },
+  {
+    id: 'DL-007',
+    userId: '1',
+    userName: 'John Doe',
+    videoTitle: 'News Highlights: April 2025',
+    platform: 'Facebook',
+    quality: '720p',
+    fileSize: '120 MB',
+    downloadDate: '2025-04-03T14:20:00Z',
+    status: 'completed'
+  },
+  {
+    id: 'DL-008',
+    userId: '4',
+    userName: 'Emily Davis',
+    videoTitle: 'Cooking Class: French Pastries',
+    platform: 'YouTube',
+    quality: '1080p',
+    fileSize: '450 MB',
+    downloadDate: '2025-04-03T11:10:00Z',
+    status: 'completed'
+  }
+];

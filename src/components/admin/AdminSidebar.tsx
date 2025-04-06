@@ -8,7 +8,9 @@ import {
   LogOut, 
   DownloadCloud,
   LayoutDashboard,
-  PieChart
+  CreditCard,
+  FileText,
+  PuzzleIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,6 +26,8 @@ export const AdminSidebar: React.FC = () => {
     { icon: BarChart3, label: 'Analytics', path: '/admin/analytics' },
     { icon: Users, label: 'Users', path: '/admin/users' },
     { icon: DownloadCloud, label: 'Downloads', path: '/admin/downloads' },
+    { icon: PuzzleIcon, label: 'Plans', path: '/admin/plans' },
+    { icon: FileText, label: 'Invoices', path: '/admin/invoices' },
     { icon: Settings, label: 'Settings', path: '/admin/settings' },
   ];
 

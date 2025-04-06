@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,8 +13,8 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { api } from '@/api/mockApi';
-import { format } from 'date-fns';
-import { Search, UserPlus, Download, Eye } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
+import { Download, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -25,21 +25,16 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { DeleteUserDialog } from '@/components/admin/users/DeleteUserDialog';
 
-const AdminUsersPage: React.FC = () => {
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
+const AdminDownloadsPage: React.FC = () => {
+  const [page, setPage] = React.useState(1);
   const limit = 10;
+  const [searchTerm, setSearchTerm] = React.useState('');
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['admin-users', page, limit],
-    queryFn: () => api.getUsers({ page, limit })
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['admin-downloads', page, limit],
+    queryFn: () => api.getDownloads({ page, limit })
   });
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
 
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && (!data || newPage <= data.totalPages)) {
@@ -51,12 +46,12 @@ const AdminUsersPage: React.FC = () => {
     <AdminLayout>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Users</h1>
-          <p className="text-muted-foreground">View and manage user accounts</p>
+          <h1 className="text-2xl font-bold">Downloads</h1>
+          <p className="text-muted-foreground">View all downloads across the platform</p>
         </div>
         <Button>
-          <UserPlus className="h-4 w-4 mr-2" />
-          Add User
+          <Download className="h-4 w-4 mr-2" />
+          Export Data
         </Button>
       </div>
 
@@ -64,80 +59,65 @@ const AdminUsersPage: React.FC = () => {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search users by name or email..."
+            placeholder="Search downloads..."
             className="pl-10"
             value={searchTerm}
-            onChange={handleSearch}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>User Accounts</CardTitle>
-          <CardDescription>A list of all user accounts</CardDescription>
+          <CardTitle>Recent Downloads</CardTitle>
+          <CardDescription>A list of all recent downloads across the platform</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-4">Loading users...</div>
+            <div className="text-center py-4">Loading downloads...</div>
           ) : isError ? (
-            <div className="text-center py-4 text-destructive">Error loading users</div>
+            <div className="text-center py-4 text-destructive">Error loading downloads</div>
           ) : (
             <>
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>User</TableHead>
-                    <TableHead>Plan</TableHead>
-                    <TableHead>Downloads</TableHead>
-                    <TableHead>Registered</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Video</TableHead>
+                    <TableHead>Platform</TableHead>
+                    <TableHead>Quality</TableHead>
+                    <TableHead>Size</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data && data.users.length > 0 ? (
-                    data.users
-                      .filter(user => 
+                  {data && data.downloads.length > 0 ? (
+                    data.downloads
+                      .filter(download => 
                         searchTerm === '' || 
-                        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+                        download.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        download.videoTitle.toLowerCase().includes(searchTerm.toLowerCase())
                       )
-                      .map((user) => (
-                        <TableRow key={user.id}>
+                      .map((download) => (
+                        <TableRow key={download.id}>
+                          <TableCell>{download.userName}</TableCell>
+                          <TableCell className="max-w-[200px] truncate">{download.videoTitle}</TableCell>
+                          <TableCell>{download.platform}</TableCell>
+                          <TableCell>{download.quality}</TableCell>
+                          <TableCell>{download.fileSize}</TableCell>
+                          <TableCell>{format(parseISO(download.downloadDate), 'MMM d, yyyy, HH:mm')}</TableCell>
                           <TableCell>
-                            <div className="font-medium">{user.name}</div>
-                            <div className="text-sm text-muted-foreground">{user.email}</div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={user.plan === 'Free' ? 'secondary' : 'default'}>
-                              {user.plan}
+                            <Badge variant={download.status === 'completed' ? 'success' : 'destructive'}>
+                              {download.status}
                             </Badge>
-                          </TableCell>
-                          <TableCell>{user.downloadCount}</TableCell>
-                          <TableCell>{format(new Date(user.registrationDate), 'MMM d, yyyy')}</TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="icon">
-                                <Eye className="h-4 w-4" />
-                                <span className="sr-only">View user</span>
-                              </Button>
-                              <Button variant="ghost" size="icon">
-                                <Download className="h-4 w-4" />
-                                <span className="sr-only">View downloads</span>
-                              </Button>
-                              <DeleteUserDialog 
-                                userId={user.id} 
-                                userName={user.name}
-                                onSuccess={refetch}
-                              />
-                            </div>
                           </TableCell>
                         </TableRow>
                       ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center">
-                        No users found
+                      <TableCell colSpan={7} className="text-center">
+                        No downloads found
                       </TableCell>
                     </TableRow>
                   )}
@@ -185,4 +165,4 @@ const AdminUsersPage: React.FC = () => {
   );
 };
 
-export default AdminUsersPage;
+export default AdminDownloadsPage;

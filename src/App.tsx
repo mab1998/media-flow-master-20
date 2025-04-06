@@ -21,6 +21,7 @@ import AdminAnalyticsPage from "./pages/AdminAnalyticsPage";
 import AdminDownloadsPage from "./pages/AdminDownloadsPage";
 import AdminInvoicesPage from "./pages/AdminInvoicesPage";
 import AdminSettingsPage from "./pages/AdminSettingsPage";
+import AdminStyleConfigPage from "./pages/AdminStyleConfigPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/admin/downloads" element={<AdminDownloadsPage />} />
             <Route path="/admin/invoices" element={<AdminInvoicesPage />} />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
+            <Route path="/admin/style-config" element={<AdminStyleConfigPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

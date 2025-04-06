@@ -3,17 +3,14 @@ import React from 'react';
 import { type Feature } from '@/types/api';
 import * as Icons from 'lucide-react';
 
-type IconName = keyof typeof Icons;
-
 type FeatureCardProps = {
   feature: Feature;
 };
 
 export const FeatureCard: React.FC<FeatureCardProps> = ({ feature }) => {
-  // Get the icon component dynamically from the lucide-react library
-  const IconComponent = feature.icon in Icons 
-    ? Icons[feature.icon as IconName] 
-    : Icons.Video;
+  // Dynamically get the icon component
+  // This approach avoids TypeScript errors by ensuring we're using a valid component
+  const IconComponent = Icons[feature.icon as keyof typeof Icons] || Icons.HelpCircle;
 
   return (
     <div className="bg-card border border-border/50 rounded-lg p-6 hover:border-primary/50 transition-all duration-300 card-hover">

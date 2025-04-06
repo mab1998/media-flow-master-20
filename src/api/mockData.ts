@@ -1,5 +1,4 @@
-
-import { type Feature, type FAQItem, type PricingPlan, type Platform, type User, type VideoInfo } from "@/types/api";
+import { type Feature, type FAQItem, type PricingPlan, type Platform, type User, type VideoInfo, type VideoQuality } from "@/types/api";
 import { DownloadCloud, Zap, Globe, Shield, Clock, RefreshCw, Users, Star, Infinity, HelpCircle } from "lucide-react";
 
 // Mock platforms data
@@ -237,14 +236,14 @@ export const generateMockVideoInfo = (url: string): VideoInfo => {
 
   // Mock formats based on platform and random availability
   const formats = [
-    { id: `fmt1-${randomId}`, label: '240p', quality: '240p', format: 'MP4', fileSize: '10 MB' },
-    { id: `fmt2-${randomId}`, label: '360p', quality: '360p', format: 'MP4', fileSize: '20 MB' },
-    { id: `fmt3-${randomId}`, label: '480p', quality: '480p', format: 'MP4', fileSize: '40 MB' },
-    { id: `fmt4-${randomId}`, label: '720p', quality: '720p', format: 'MP4', fileSize: '80 MB' },
-    { id: `fmt5-${randomId}`, label: '1080p', quality: '1080p', format: 'MP4', fileSize: '160 MB' },
-    { id: `fmt6-${randomId}`, label: '2K', quality: '2K', format: 'MP4', fileSize: '300 MB' },
-    { id: `fmt7-${randomId}`, label: '4K', quality: '4K', format: 'MP4', fileSize: '600 MB' },
-    { id: `fmt8-${randomId}`, label: 'MP3 Audio', quality: '240p', format: 'MP3', fileSize: '5 MB' }
+    { id: `fmt1-${randomId}`, label: '240p', quality: '240p' as VideoQuality, format: 'MP4', fileSize: '10 MB' },
+    { id: `fmt2-${randomId}`, label: '360p', quality: '360p' as VideoQuality, format: 'MP4', fileSize: '20 MB' },
+    { id: `fmt3-${randomId}`, label: '480p', quality: '480p' as VideoQuality, format: 'MP4', fileSize: '40 MB' },
+    { id: `fmt4-${randomId}`, label: '720p', quality: '720p' as VideoQuality, format: 'MP4', fileSize: '80 MB' },
+    { id: `fmt5-${randomId}`, label: '1080p', quality: '1080p' as VideoQuality, format: 'MP4', fileSize: '160 MB' },
+    { id: `fmt6-${randomId}`, label: '2K', quality: '2K' as VideoQuality, format: 'MP4', fileSize: '300 MB' },
+    { id: `fmt7-${randomId}`, label: '4K', quality: '4K' as VideoQuality, format: 'MP4', fileSize: '600 MB' },
+    { id: `fmt8-${randomId}`, label: 'MP3 Audio', quality: '240p' as VideoQuality, format: 'MP3', fileSize: '5 MB' }
   ];
 
   // Randomize format availability based on platform

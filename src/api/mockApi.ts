@@ -1,5 +1,5 @@
-
 import { toast } from '@/hooks/use-toast';
+import React, { useState } from 'react';
 import { 
   type VideoInfo, 
   type LoginRequest, 
@@ -313,9 +313,9 @@ export function useApiRequest<T, Args extends any[]>(
     errorMessage?: string
   } = {}
 ) {
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState<ApiError | null>(null);
-  const [data, setData] = React.useState<T | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<ApiError | null>(null);
+  const [data, setData] = useState<T | null>(null);
 
   const execute = async (...args: Args): Promise<T | null> => {
     try {

@@ -11,7 +11,9 @@ type FeatureCardProps = {
 
 export const FeatureCard: React.FC<FeatureCardProps> = ({ feature }) => {
   // Get the icon component dynamically from the lucide-react library
-  const IconComponent = Icons[feature.icon as IconName] || Icons.Video;
+  const IconComponent = feature.icon in Icons 
+    ? Icons[feature.icon as IconName] 
+    : Icons.Video;
 
   return (
     <div className="bg-card border border-border/50 rounded-lg p-6 hover:border-primary/50 transition-all duration-300 card-hover">

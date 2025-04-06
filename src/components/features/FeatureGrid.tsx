@@ -1,5 +1,5 @@
 
-import { features } from '@/api/mockData';
+import { features } from '@/api/data';
 import { FeatureCard } from './FeatureCard';
 
 export const FeatureGrid = () => {

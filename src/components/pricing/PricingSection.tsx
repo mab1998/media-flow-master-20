@@ -1,5 +1,5 @@
 
-import { pricingPlans } from '@/api/mockData';
+import { pricingPlans } from '@/api/data';
 import { PricingCard } from './PricingCard';
 
 export const PricingSection = () => {

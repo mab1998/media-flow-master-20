@@ -141,3 +141,48 @@ export type DownloadRecord = {
   downloadDate: string;
   status: 'completed' | 'failed';
 };
+
+// Style Configuration Types
+export type SocialMediaConfig = {
+  id: string;
+  platform: 'Facebook' | 'Instagram' | 'Twitter' | 'LinkedIn' | 'YouTube';
+  url: string;
+  isActive: boolean;
+  icon: string;
+};
+
+export type ColorScheme = {
+  id: string;
+  name: string;
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  backgroundColor: string;
+  textColor: string;
+  isDarkMode: boolean;
+};
+
+export type LandingPageSection = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  content: string;
+  order: number;
+  isActive: boolean;
+  imageUrl?: string;
+  buttonText?: string;
+  buttonUrl?: string;
+};
+
+export type SiteConfig = {
+  id: string;
+  siteName: string;
+  siteDescription: string;
+  logoUrl: string;
+  faviconUrl: string;
+  colorScheme: ColorScheme;
+  socialMedia: SocialMediaConfig[];
+  landingSections: LandingPageSection[];
+  faqItems: FAQItem[];
+  lastUpdated: string;
+};

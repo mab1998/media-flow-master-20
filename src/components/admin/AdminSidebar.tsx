@@ -10,7 +10,8 @@ import {
   LayoutDashboard,
   CreditCard,
   FileText,
-  PuzzleIcon
+  PuzzleIcon,
+  Palette
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,6 +29,7 @@ export const AdminSidebar: React.FC = () => {
     { icon: DownloadCloud, label: 'Downloads', path: '/admin/downloads' },
     { icon: PuzzleIcon, label: 'Plans', path: '/admin/plans' },
     { icon: FileText, label: 'Invoices', path: '/admin/invoices' },
+    { icon: Palette, label: 'Style Config', path: '/admin/style-config' },
     { icon: Settings, label: 'Settings', path: '/admin/settings' },
   ];
 

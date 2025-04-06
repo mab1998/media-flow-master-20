@@ -14,7 +14,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { api } from '@/api/mockApi';
 import { format } from 'date-fns';
-import { Search, UserPlus, Download, Eye } from 'lucide-react';
+import { Search, UserPlus, Download, Eye, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -26,6 +26,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { DeleteUserDialog } from '@/components/admin/users/DeleteUserDialog';
+import { UserDetailsDialog } from '@/components/admin/users/UserDetailsDialog';
+import { AddUserDialog } from '@/components/admin/users/AddUserDialog';
+import { toast } from '@/hooks/use-toast';
 
 const AdminUsersPage: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -47,6 +50,27 @@ const AdminUsersPage: React.FC = () => {
     }
   };
 
+  const handleDownloadUserData = (userId: string, userName: string) => {
+    // In a real app, this would trigger an API call to generate a file
+    // Here we'll mock it by creating a JSON file with user data
+    api.getUserById(userId).then(userData => {
+      const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(
+        JSON.stringify(userData, null, 2)
+      )}`;
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute('href', dataStr);
+      downloadAnchorNode.setAttribute('download', `user-${userName.toLowerCase().replace(/\s+/g, '-')}.json`);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      
+      toast({
+        title: "Downloaded user data",
+        description: `User data for ${userName} has been downloaded.`,
+      });
+    });
+  };
+
   return (
     <AdminLayout>
       <div className="flex items-center justify-between mb-6">
@@ -54,10 +78,7 @@ const AdminUsersPage: React.FC = () => {
           <h1 className="text-2xl font-bold">Users</h1>
           <p className="text-muted-foreground">View and manage user accounts</p>
         </div>
-        <Button>
-          <UserPlus className="h-4 w-4 mr-2" />
-          Add User
-        </Button>
+        <AddUserDialog onSuccess={refetch} />
       </div>
 
       <div className="mb-6">
@@ -117,14 +138,23 @@ const AdminUsersPage: React.FC = () => {
                           <TableCell>{format(new Date(user.registrationDate), 'MMM d, yyyy')}</TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="icon">
-                                <Eye className="h-4 w-4" />
-                                <span className="sr-only">View user</span>
+                              <UserDetailsDialog userId={user.id} />
+                              
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => handleDownloadUserData(user.id, user.name)}
+                                title="Download user data"
+                              >
+                                <FileDown className="h-4 w-4" />
+                                <span className="sr-only">Download user data</span>
                               </Button>
-                              <Button variant="ghost" size="icon">
+                              
+                              <Button variant="ghost" size="icon" title="View downloads">
                                 <Download className="h-4 w-4" />
                                 <span className="sr-only">View downloads</span>
                               </Button>
+                              
                               <DeleteUserDialog 
                                 userId={user.id} 
                                 userName={user.name}

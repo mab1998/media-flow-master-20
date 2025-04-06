@@ -11,9 +11,11 @@ type FeatureCardProps = {
 export const FeatureCard: React.FC<FeatureCardProps> = ({ feature }) => {
   // Dynamically get the icon component
   // Use type assertion and check if the icon exists in the Lucide icons
-  const IconComponent = feature.icon in Icons 
-    ? Icons[feature.icon as keyof typeof Icons] 
-    : HelpCircle;
+  let IconComponent: React.ElementType = HelpCircle;
+  
+  if (feature.icon in Icons) {
+    IconComponent = Icons[feature.icon as keyof typeof Icons] as React.ElementType;
+  }
   
   return (
     <div className="bg-card border border-border/50 rounded-lg p-6 hover:border-primary/50 transition-all duration-300 card-hover">

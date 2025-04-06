@@ -67,6 +67,39 @@ export const adminService = {
     return user;
   },
   
+  // Add a new user
+  addUser: async ({ name, email, plan }: { name: string; email: string; plan: "Free" | "Pro" | "Unlimited" }): Promise<User> => {
+    // Check authentication
+    const token = getAuthToken();
+    if (!token) {
+      throw createApiError(401, 'Not authenticated');
+    }
+
+    // Simulate API delay
+    await delay(800);
+    
+    // Check if email is already in use
+    const existingUser = mockUsersList.find(user => user.email.toLowerCase() === email.toLowerCase());
+    if (existingUser) {
+      throw createApiError(409, 'Email is already in use');
+    }
+    
+    // Create new user (in a real app, this would save to database)
+    const newUser: User = {
+      id: `${mockUsersList.length + 1}`,
+      name,
+      email,
+      plan,
+      downloads: [],
+      downloadCount: 0,
+      registrationDate: new Date().toISOString()
+    };
+    
+    // In a real app, this would update the database
+    // Here we just return the new user
+    return newUser;
+  },
+  
   // Delete a user
   deleteUser: async (userId: string): Promise<{ success: boolean }> => {
     // Check authentication

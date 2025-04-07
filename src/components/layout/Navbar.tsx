@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ApiModeToggle } from './ApiModeToggle';
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,8 +65,10 @@ export const Navbar = () => {
           </Link>
         </div>
 
-        {/* Authentication Buttons */}
+        {/* Authentication Buttons and API Mode Toggle */}
         <div className="hidden md:flex items-center gap-4">
+          <ApiModeToggle />
+          
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -121,6 +124,11 @@ export const Navbar = () => {
             <Link to="/faq" className="text-foreground py-2 hover:text-primary" onClick={closeMenu}>
               FAQ
             </Link>
+            
+            <div className="flex items-center py-2">
+              <ApiModeToggle />
+            </div>
+            
             <div className="border-t border-border/50 my-2"></div>
             {isAuthenticated ? (
               <>

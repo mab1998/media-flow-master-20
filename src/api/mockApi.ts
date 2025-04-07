@@ -10,6 +10,7 @@ import { downloadService } from './services/downloadService';
 import { isAuthenticated } from './utils/storageHelpers';
 
 import { realAuthService, realVideoService, realDownloadService } from './services/realServices';
+import { realAdminService } from './services/realAdminService';
 import { useApiMode } from '@/contexts/ApiModeContext';
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
@@ -33,7 +34,7 @@ const mockApi = {
 const realApi = {
   ...realVideoService,
   ...realAuthService,
-  ...adminService, // Keep using mock admin services
+  ...realAdminService, // Use real admin services
   ...configService, // Keep using mock config services
   ...legalService, // Keep using mock legal services
   ...paymentService, // Keep using mock payment services
@@ -119,7 +120,3 @@ export const api = new Proxy({} as typeof mockApi, {
     return selectedApi[prop as keyof typeof mockApi];
   }
 });
-
-// Remove the duplicate export line that was causing the error
-// Legacy exports for backward compatibility
-// export { useApiRequest };

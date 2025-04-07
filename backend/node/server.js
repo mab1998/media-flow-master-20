@@ -13,11 +13,13 @@ app.use(express.json());
 const authRoutes = require('./routes/auth');
 const videoRoutes = require('./routes/video');
 const downloadRoutes = require('./routes/download');
+const adminRoutes = require('./routes/admin');
 
 // Use routes
 app.use('/api/auth', authRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/downloads', downloadRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

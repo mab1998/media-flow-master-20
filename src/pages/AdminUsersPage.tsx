@@ -14,8 +14,6 @@ import { format } from 'date-fns';
 import { useApiRequest } from '@/api/hooks/useApiRequest';
 import { api } from '@/api/mockApi';
 import { Pagination } from '@/components/ui/pagination';
-import { DownloadDetailsDialog } from '@/components/admin/downloads/DownloadDetailsDialog';
-import { mockDownloads } from '@/api/data/adminData';
 
 const AdminUsersPage = () => {
   const [page, setPage] = useState(1);
@@ -62,12 +60,6 @@ const AdminUsersPage = () => {
   };
   
   const usersToDisplay = hasSearched ? filteredUsers : (data?.users || []);
-  
-  // Find a relevant download ID for each user (for the "View Download" button demo)
-  const getUserDownloadId = (userId: string) => {
-    const userDownload = mockDownloads.find(download => download.userId === userId);
-    return userDownload ? userDownload.id : mockDownloads[0].id; // Fallback to first download if none found
-  };
 
   return (
     <AdminLayout>
@@ -151,7 +143,6 @@ const AdminUsersPage = () => {
                             </TableCell>
                             <TableCell className="text-right space-x-1">
                               <UserDetailsDialog userId={user.id} />
-                              <DownloadDetailsDialog downloadId={getUserDownloadId(user.id)} />
                               <DeleteUserDialog 
                                 userId={user.id} 
                                 userName={user.name}

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 
 const AdminSettingsPage: React.FC = () => {
@@ -32,6 +33,13 @@ const AdminSettingsPage: React.FC = () => {
     });
   };
 
+  const handleSaveSmtpSettings = () => {
+    toast({
+      title: "Settings Saved",
+      description: "Your SMTP settings have been saved successfully."
+    });
+  };
+
   return (
     <AdminLayout>
       <div className="mb-6">
@@ -44,7 +52,7 @@ const AdminSettingsPage: React.FC = () => {
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="api">API</TabsTrigger>
-          <TabsTrigger value="backups">Backups</TabsTrigger>
+          <TabsTrigger value="smtp">SMTP</TabsTrigger>
         </TabsList>
         
         <TabsContent value="general">
@@ -213,53 +221,71 @@ const AdminSettingsPage: React.FC = () => {
           </Card>
         </TabsContent>
         
-        <TabsContent value="backups">
+        <TabsContent value="smtp">
           <Card>
             <CardHeader>
-              <CardTitle>Backup Settings</CardTitle>
-              <CardDescription>Configure system backups</CardDescription>
+              <CardTitle>SMTP Settings</CardTitle>
+              <CardDescription>Configure email sending server settings</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="auto-backup">Automatic Backups</Label>
+                    <Label htmlFor="smtp-enabled">Enable SMTP</Label>
                     <p className="text-sm text-muted-foreground">
-                      Schedule automatic system backups
+                      Use custom SMTP server for sending emails
                     </p>
                   </div>
-                  <Switch id="auto-backup" defaultChecked />
+                  <Switch id="smtp-enabled" defaultChecked />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="backup-frequency">Backup Frequency</Label>
-                  <select 
-                    id="backup-frequency" 
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    defaultValue="daily"
-                  >
-                    <option value="hourly">Hourly</option>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                  </select>
+                  <Label htmlFor="smtp-host">SMTP Host</Label>
+                  <Input id="smtp-host" defaultValue="smtp.example.com" />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="backup-retention">Backup Retention (days)</Label>
-                  <Input id="backup-retention" type="number" defaultValue="30" />
+                  <Label htmlFor="smtp-port">SMTP Port</Label>
+                  <Input id="smtp-port" type="number" defaultValue="587" />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="smtp-encryption">Encryption</Label>
+                  <Select defaultValue="tls">
+                    <SelectTrigger id="smtp-encryption">
+                      <SelectValue placeholder="Select encryption type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="ssl">SSL</SelectItem>
+                      <SelectItem value="tls">TLS</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="smtp-username">SMTP Username</Label>
+                  <Input id="smtp-username" defaultValue="smtp-user@example.com" />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="smtp-password">SMTP Password</Label>
+                  <div className="flex space-x-2">
+                    <Input id="smtp-password" type="password" value="•••••••••••••••" />
+                    <Button variant="outline" size="icon">
+                      👁️
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Button variant="outline" className="mr-2">Test Connection</Button>
+                  <Button variant="outline">Send Test Email</Button>
                 </div>
               </div>
               
-              <Separator />
-              
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Manual Backup</h3>
-                <p className="text-sm text-muted-foreground">Create a backup of the system data</p>
-                <div className="flex space-x-2">
-                  <Button variant="outline">Create Backup</Button>
-                  <Button variant="outline">Download Latest Backup</Button>
-                </div>
+              <div className="flex justify-end mt-4">
+                <Button onClick={handleSaveSmtpSettings}>Save Changes</Button>
               </div>
             </CardContent>
           </Card>

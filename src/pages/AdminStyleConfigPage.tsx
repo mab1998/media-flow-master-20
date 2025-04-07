@@ -6,6 +6,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { ColorSchemeConfig } from '@/components/admin/style/ColorSchemeConfig';
 import { FaqConfig } from '@/components/admin/style/FaqConfig';
+import { LandingSectionsConfig } from '@/components/admin/style/LandingSectionsConfig';
+import { SocialMediaConfig } from '@/components/admin/style/SocialMediaConfig';
 import { api } from '@/api/mockApi';
 import { useToast } from '@/hooks/use-toast';
 
@@ -56,6 +58,7 @@ const AdminStyleConfigPage = () => {
             <TabsTrigger value="colors">Color Scheme</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
             <TabsTrigger value="landing">Landing Sections</TabsTrigger>
+            <TabsTrigger value="social">Social Media</TabsTrigger>
           </TabsList>
           
           <TabsContent value="colors">
@@ -83,10 +86,21 @@ const AdminStyleConfigPage = () => {
           <TabsContent value="landing">
             <Card>
               <CardContent className="pt-6">
-                {/* This component exists in your codebase but hasn't been fully rendered */}
-                <div className="p-4 text-center">
-                  <p>Landing sections configuration is currently being implemented.</p>
-                </div>
+                <LandingSectionsConfig 
+                  sections={siteConfig.landingSections} 
+                  onUpdate={fetchSiteConfig}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="social">
+            <Card>
+              <CardContent className="pt-6">
+                <SocialMediaConfig 
+                  socialMedia={siteConfig.socialMedia} 
+                  onUpdate={fetchSiteConfig}
+                />
               </CardContent>
             </Card>
           </TabsContent>

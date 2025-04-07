@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -76,7 +75,7 @@ export const InvoiceDetailsDialog: React.FC<InvoiceDetailsDialogProps> = ({ invo
       case 'paid':
         return 'default';
       case 'pending':
-        return 'warning';
+        return 'destructive';
       case 'failed':
         return 'destructive';
       case 'refunded':

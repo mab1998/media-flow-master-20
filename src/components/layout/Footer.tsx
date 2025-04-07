@@ -59,7 +59,7 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/cookies" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/cookie-policy" className="text-muted-foreground hover:text-primary transition-colors">
                   Cookie Policy
                 </Link>
               </li>
@@ -155,3 +155,4 @@ export const Footer = () => {
     </footer>
   );
 };
+

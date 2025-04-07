@@ -42,7 +42,7 @@ const CookiePolicyPage: React.FC = () => {
           </div>
         ) : policy ? (
           <div className="prose dark:prose-invert max-w-none">
-            <Markdown>{policy.content}</Markdown>
+            <Markdown>{policy.content || ''}</Markdown>
           </div>
         ) : (
           <div className="p-8 text-center">
@@ -51,7 +51,7 @@ const CookiePolicyPage: React.FC = () => {
         )}
         
         <div className="mt-12 text-sm text-muted-foreground">
-          <p>Last updated: {policy ? new Date(policy.lastUpdated).toLocaleDateString() : 'N/A'}</p>
+          <p>Last updated: {policy && policy.lastUpdated ? new Date(policy.lastUpdated).toLocaleDateString() : 'N/A'}</p>
         </div>
       </div>
     </MainLayout>

@@ -1,17 +1,30 @@
 
-import { useAuth } from '@/contexts/AuthContext';
-import { Video, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Video, Clock, CheckCircle, XCircle, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { type UserDownload } from '@/types/api';
+import { useApiRequest } from '@/api/hooks/useApiRequest';
+import { api } from '@/api/mockApi';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export const DownloadHistory = () => {
-  const { user } = useAuth();
+  const [filter, setFilter] = useState<{platform?: string, status?: string}>({});
+  const [page] = useState(1);
+  const [limit] = useState(20);
 
-  if (!user) return null;
+  const { execute: fetchDownloads, data, isLoading } = useApiRequest(() => 
+    api.getUserDownloads(page, limit, filter), 
+    { errorMessage: 'Failed to load download history' }
+  );
 
-  const downloads = user.downloads;
+  useEffect(() => {
+    fetchDownloads();
+  }, [filter, page]);
+
+  const downloads = data?.downloads || [];
 
   // Format date
   const formatDate = (dateString: string) => {
@@ -98,7 +111,55 @@ export const DownloadHistory = () => {
     <div className="bg-card rounded-lg border border-border/50 p-6">
       <h2 className="text-xl font-semibold mb-4">Download History</h2>
       
-      {downloads.length === 0 ? (
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="relative w-full sm:w-auto sm:flex-1">
+          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input 
+            placeholder="Search downloads..."
+            className="w-full pl-9"
+            onChange={(e) => setFilter(prev => ({ ...prev, search: e.target.value || undefined }))}
+          />
+        </div>
+        
+        <div className="flex gap-4">
+          <Select 
+            onValueChange={(value) => setFilter(prev => ({ ...prev, platform: value || undefined }))}
+          >
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Platform" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">All Platforms</SelectItem>
+              <SelectItem value="YouTube">YouTube</SelectItem>
+              <SelectItem value="TikTok">TikTok</SelectItem>
+              <SelectItem value="Facebook">Facebook</SelectItem>
+              <SelectItem value="Instagram">Instagram</SelectItem>
+              <SelectItem value="Twitter">Twitter</SelectItem>
+              <SelectItem value="Vimeo">Vimeo</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select 
+            onValueChange={(value) => setFilter(prev => ({ ...prev, status: value || undefined }))}
+          >
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="failed">Failed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      
+      {isLoading ? (
+        <div className="py-8 text-center">
+          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading downloads...</p>
+        </div>
+      ) : downloads.length === 0 ? (
         <div className="py-8 text-center text-muted-foreground">
           <Video className="h-10 w-10 mx-auto mb-3 opacity-50" />
           <p>No downloads yet</p>

@@ -6,6 +6,7 @@ import { adminService } from './services/adminService';
 import { configService } from './services/configService';
 import { legalService } from './services/legalService';
 import { paymentService } from './services/paymentService';
+import { downloadService } from './services/downloadService';
 import { isAuthenticated } from './utils/storageHelpers';
 import { useApiRequest } from './hooks/useApiRequest';
 
@@ -17,6 +18,7 @@ export const api = {
   ...configService,
   ...legalService,
   ...paymentService,
+  ...downloadService,
   
   // Check authentication status
   isAuthenticated

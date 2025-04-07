@@ -31,7 +31,7 @@ const HomePage = () => {
           </div>
 
           <div className="mb-16">
-            <VideoUrlInput onVideoFetched={handleVideoFetched} />
+            <VideoUrlInput onVideoFetched={handleVideoFetched} requireLogin={false} />
           </div>
 
           {videoInfo && (

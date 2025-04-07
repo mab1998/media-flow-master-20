@@ -31,7 +31,7 @@ const DashboardPage = () => {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-card rounded-lg border border-border/50 p-6">
             <h2 className="text-xl font-semibold mb-4">Download Videos</h2>
-            <VideoUrlInput onVideoFetched={handleVideoFetched} />
+            <VideoUrlInput onVideoFetched={handleVideoFetched} requireLogin={true} />
 
             {videoInfo && (
               <div className="mt-6">

@@ -5,13 +5,23 @@ import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { type VideoInfo } from '@/types/api';
 import { api, useApiRequest } from '@/api/mockApi';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 type VideoUrlInputProps = {
   onVideoFetched: (videoInfo: VideoInfo) => void;
+  requireLogin?: boolean;
 };
 
-export const VideoUrlInput: React.FC<VideoUrlInputProps> = ({ onVideoFetched }) => {
+export const VideoUrlInput: React.FC<VideoUrlInputProps> = ({ 
+  onVideoFetched, 
+  requireLogin = false 
+}) => {
   const [url, setUrl] = useState('');
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   
   const { execute: fetchVideo, isLoading } = useApiRequest(api.fetchVideoInfo, {
     onSuccess: (data) => {
@@ -26,6 +36,16 @@ export const VideoUrlInput: React.FC<VideoUrlInputProps> = ({ onVideoFetched }) 
     e.preventDefault();
     if (!url.trim()) return;
     
+    if (requireLogin && !isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please login to download videos",
+        variant: "destructive"
+      });
+      navigate('/login');
+      return;
+    }
+
     const videoInfo = await fetchVideo(url);
     if (videoInfo) {
       // Input is kept if fetch fails

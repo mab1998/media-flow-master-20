@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Mail, MapPin, Phone } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { api } from '@/api/mockApi';
-import { useApiRequest } from '@/api/mockApi';
 
 const ContactUsPage: React.FC = () => {
   const [name, setName] = useState('');
@@ -134,22 +133,24 @@ const ContactUsPage: React.FC = () => {
                     <p className="text-muted-foreground">{contactInfo.supportHours}</p>
                   </div>
                   
-                  <div className="pt-2">
-                    <h3 className="font-medium mb-2">Social Media</h3>
-                    <div className="flex gap-4">
-                      {contactInfo.socialMedia.map((social: any) => (
-                        <a 
-                          key={social.platform} 
-                          href={social.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-primary hover:text-primary/80"
-                        >
-                          {social.platform}
-                        </a>
-                      ))}
+                  {contactInfo.socialMedia && Array.isArray(contactInfo.socialMedia) && contactInfo.socialMedia.length > 0 && (
+                    <div className="pt-2">
+                      <h3 className="font-medium mb-2">Social Media</h3>
+                      <div className="flex gap-4">
+                        {contactInfo.socialMedia.map((social: any) => (
+                          <a 
+                            key={social.platform} 
+                            href={social.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-primary hover:text-primary/80"
+                          >
+                            {social.platform}
+                          </a>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </>
               ) : (
                 <p className="text-center text-muted-foreground py-4">

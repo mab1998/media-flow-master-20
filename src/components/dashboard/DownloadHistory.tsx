@@ -129,7 +129,7 @@ export const DownloadHistory = () => {
               <SelectValue placeholder="Platform" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Platforms</SelectItem>
+              <SelectItem value="all">All Platforms</SelectItem>
               <SelectItem value="YouTube">YouTube</SelectItem>
               <SelectItem value="TikTok">TikTok</SelectItem>
               <SelectItem value="Facebook">Facebook</SelectItem>
@@ -146,7 +146,7 @@ export const DownloadHistory = () => {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value="all">All Statuses</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
               <SelectItem value="failed">Failed</SelectItem>
             </SelectContent>

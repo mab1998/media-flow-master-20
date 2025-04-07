@@ -6,23 +6,42 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { type UserDownload } from '@/types/api';
 import { useApiRequest } from '@/api/hooks/useApiRequest';
-import { api } from '@/api/mockApi';
+import { useApi } from '@/api/mockApi';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 export const DownloadHistory = () => {
   const [filter, setFilter] = useState<{platform?: string, status?: string}>({});
   const [page] = useState(1);
   const [limit] = useState(20);
+  const { isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const api = useApi();
 
-  const { execute: fetchDownloads, data, isLoading } = useApiRequest(() => 
-    api.getUserDownloads(page, limit, filter), 
-    { errorMessage: 'Failed to load download history' }
+  const { execute: fetchDownloads, data, isLoading } = useApiRequest(
+    () => api.getUserDownloads(page, limit, filter), 
+    { 
+      errorMessage: 'Failed to load download history',
+      onError: (error) => {
+        console.error('Download history error:', error);
+        if (error.statusCode === 401) {
+          toast({
+            title: 'Authentication Required',
+            description: 'Please log in to view your download history',
+            variant: 'destructive',
+          });
+        }
+      }
+    }
   );
 
   useEffect(() => {
-    fetchDownloads();
-  }, [filter, page]);
+    if (isAuthenticated) {
+      fetchDownloads();
+    }
+  }, [filter, page, isAuthenticated]);
 
   const downloads = data?.downloads || [];
 
@@ -154,7 +173,12 @@ export const DownloadHistory = () => {
         </div>
       </div>
       
-      {isLoading ? (
+      {!isAuthenticated ? (
+        <div className="py-8 text-center text-muted-foreground">
+          <Video className="h-10 w-10 mx-auto mb-3 opacity-50" />
+          <p>Please log in to view your download history</p>
+        </div>
+      ) : isLoading ? (
         <div className="py-8 text-center">
           <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
           <p className="mt-2 text-muted-foreground">Loading downloads...</p>

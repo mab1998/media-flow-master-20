@@ -8,16 +8,37 @@ import {
   type VideoInfo,
   type UserDownload
 } from '@/types/api';
+import { saveAuthToken, saveCurrentUser } from '../utils/storageHelpers';
 
 export const realAuthService = {
   // Login user
   loginUser: async (credentials: LoginRequest): Promise<AuthResponse> => {
-    return realApiClient.post<AuthResponse>('/auth/login', credentials);
+    const response = await realApiClient.post<AuthResponse>('/auth/login', credentials);
+    
+    // Save token and user data
+    if (response.token) {
+      saveAuthToken(response.token);
+      if (response.user) {
+        saveCurrentUser(response.user);
+      }
+    }
+    
+    return response;
   },
 
   // Signup user
   signupUser: async (signupData: SignupRequest): Promise<AuthResponse> => {
-    return realApiClient.post<AuthResponse>('/auth/signup', signupData);
+    const response = await realApiClient.post<AuthResponse>('/auth/signup', signupData);
+    
+    // Save token and user data
+    if (response.token) {
+      saveAuthToken(response.token);
+      if (response.user) {
+        saveCurrentUser(response.user);
+      }
+    }
+    
+    return response;
   },
 
   // Logout user
@@ -63,11 +84,11 @@ export const realDownloadService = {
     queryParams.append('page', page.toString());
     queryParams.append('limit', limit.toString());
     
-    if (filter?.platform) {
+    if (filter?.platform && filter.platform !== 'all') {
       queryParams.append('platform', filter.platform);
     }
     
-    if (filter?.status) {
+    if (filter?.status && filter.status !== 'all') {
       queryParams.append('status', filter.status);
     }
     

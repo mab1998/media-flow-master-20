@@ -5,24 +5,34 @@ const router = express.Router();
 // In-memory store for downloads
 let userDownloads = [];
 
-// Download video endpoint
-router.post('/', (req, res) => {
-  const { videoId, formatId, videoUrl } = req.body;
+// Middleware to verify authentication
+const verifyAuth = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
   
   if (!token) {
     return res.status(401).json({
-      message: 'Authentication required to download videos. Please log in.'
+      message: 'Authentication required. Please log in.'
     });
   }
+  
+  // In a real implementation, verify the token here
+  // For this demo, we're just checking if a token exists
+  
+  next();
+};
+
+// Apply auth middleware to all routes
+router.use(verifyAuth);
+
+// Download video endpoint
+router.post('/', (req, res) => {
+  const { videoId, formatId, videoUrl } = req.body;
   
   if (!videoId || !formatId) {
     return res.status(400).json({
       message: 'Video ID and format ID are required'
     });
   }
-  
-  // In a real implementation, we would verify the token
   
   // Generate video info
   const videoInfo = {
@@ -63,14 +73,6 @@ router.post('/', (req, res) => {
 
 // Get user downloads with filtering and pagination
 router.get('/', (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  
-  if (!token) {
-    return res.status(401).json({
-      message: 'Not authenticated'
-    });
-  }
-  
   const { page = 1, limit = 10, platform, status } = req.query;
   
   // Filter downloads
@@ -100,13 +102,6 @@ router.get('/', (req, res) => {
 // Delete a download
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-  const token = req.headers.authorization?.split(' ')[1];
-  
-  if (!token) {
-    return res.status(401).json({
-      message: 'Not authenticated'
-    });
-  }
   
   // Remove download
   userDownloads = userDownloads.filter(d => d.id !== id);

@@ -27,8 +27,15 @@ export const videoService = {
   downloadVideo: async (videoId: string, formatId: string): Promise<UserDownload> => {
     const token = getAuthToken();
     
-    // Check authentication for tracking downloads
+    // Check authentication - REQUIRED for all downloads now
+    if (!token) {
+      throw createApiError(401, 'Authentication required to download videos. Please log in.');
+    }
+    
     let user = getCurrentUser();
+    if (!user) {
+      throw createApiError(401, 'User not found. Please log in again.');
+    }
     
     // Simulate API delay
     await delay(2000);
@@ -38,94 +45,65 @@ export const videoService = {
       throw createApiError(500, 'Download failed. Please try again.');
     }
 
-    // If user is authenticated, save this download to their history
-    if (token && user) {
-      // Get the video info (in a real app we would check if we already have it)
-      const videoUrl = localStorage.getItem(`video_${videoId}_url`);
-      
-      if (!videoUrl) {
-        throw createApiError(404, 'Video not found');
-      }
-
-      const videoInfo = await videoService.fetchVideoInfo(videoUrl);
-      
-      // Find the format
-      const format = videoInfo.availableFormats.find(fmt => fmt.id === formatId);
-      
-      if (!format) {
-        throw createApiError(404, 'Format not found');
-      }
-
-      // Check download limits for plans
-      if (user.plan === 'Free' && user.downloads.length >= 5) {
-        throw createApiError(403, 'Free plan limited to 5 downloads per day. Please upgrade your plan.');
-      }
-
-      if (user.plan === 'Pro' && user.downloads.length >= 30) {
-        throw createApiError(403, 'Pro plan limited to 30 downloads per day. Please upgrade to Unlimited for more downloads.');
-      }
-
-      // Check quality limits for plans
-      const qualityRanking: Record<string, number> = {
-        '240p': 1,
-        '360p': 2,
-        '480p': 3,
-        '720p': 4,
-        '1080p': 5,
-        '2K': 6,
-        '4K': 7
-      };
-
-      if (user.plan === 'Free' && qualityRanking[format.quality] > qualityRanking['720p']) {
-        throw createApiError(403, 'Free plan limited to 720p quality. Please upgrade your plan for higher quality downloads.');
-      }
-
-      if (user.plan === 'Pro' && qualityRanking[format.quality] > qualityRanking['1080p']) {
-        throw createApiError(403, 'Pro plan limited to 1080p quality. Please upgrade to Unlimited for 4K downloads.');
-      }
-
-      // Create download record
-      const downloadRecord: UserDownload = {
-        id: `dl-${Date.now()}`,
-        videoInfo,
-        downloadDate: new Date().toISOString(),
-        format,
-        status: 'completed'
-      };
-
-      // Update user's download history
-      user.downloads = [downloadRecord, ...user.downloads];
-      user.downloadCount += 1;
-      saveCurrentUser(user);
-
-      return downloadRecord;
-    }
-
-    // For anonymous users, just return a fake download record
+    // Get the video info
     const videoUrl = localStorage.getItem(`video_${videoId}_url`);
+    
     if (!videoUrl) {
       throw createApiError(404, 'Video not found');
     }
 
     const videoInfo = await videoService.fetchVideoInfo(videoUrl);
+    
+    // Find the format
     const format = videoInfo.availableFormats.find(fmt => fmt.id === formatId);
     
     if (!format) {
       throw createApiError(404, 'Format not found');
     }
 
-    // For free users, check quality limit
-    if (format.quality !== '240p' && format.quality !== '360p' && format.quality !== '480p' && format.quality !== '720p') {
-      throw createApiError(403, 'Free users can only download up to 720p quality. Please sign up for higher quality downloads.');
+    // Check download limits for plans
+    if (user.plan === 'Free' && user.downloads.length >= 5) {
+      throw createApiError(403, 'Free plan limited to 5 downloads per day. Please upgrade your plan.');
     }
-    
-    return {
+
+    if (user.plan === 'Pro' && user.downloads.length >= 30) {
+      throw createApiError(403, 'Pro plan limited to 30 downloads per day. Please upgrade to Unlimited for more downloads.');
+    }
+
+    // Check quality limits for plans
+    const qualityRanking: Record<string, number> = {
+      '240p': 1,
+      '360p': 2,
+      '480p': 3,
+      '720p': 4,
+      '1080p': 5,
+      '2K': 6,
+      '4K': 7
+    };
+
+    if (user.plan === 'Free' && qualityRanking[format.quality] > qualityRanking['720p']) {
+      throw createApiError(403, 'Free plan limited to 720p quality. Please upgrade your plan for higher quality downloads.');
+    }
+
+    if (user.plan === 'Pro' && qualityRanking[format.quality] > qualityRanking['1080p']) {
+      throw createApiError(403, 'Pro plan limited to 1080p quality. Please upgrade to Unlimited for 4K downloads.');
+    }
+
+    // Create download record
+    const downloadRecord: UserDownload = {
       id: `dl-${Date.now()}`,
       videoInfo,
       downloadDate: new Date().toISOString(),
       format,
       status: 'completed'
     };
+
+    // Update user's download history
+    user.downloads = [downloadRecord, ...user.downloads];
+    user.downloadCount += 1;
+    saveCurrentUser(user);
+
+    return downloadRecord;
   },
 
   // Get user downloads

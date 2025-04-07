@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { authService } from './services/authService';
 import { videoService } from './services/videoService';
@@ -119,5 +120,6 @@ export const api = new Proxy({} as typeof mockApi, {
   }
 });
 
+// Remove the duplicate export line that was causing the error
 // Legacy exports for backward compatibility
-export { useApiRequest };
+// export { useApiRequest };

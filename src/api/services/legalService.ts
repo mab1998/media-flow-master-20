@@ -1,193 +1,226 @@
 
-// Mock data for legal pages and settings
-const mockTermsOfService = {
-  id: '1',
-  title: 'Terms of Service',
-  content: `
-## Terms and Conditions
+import { LegalDocument, ContactInfo } from '@/types/api';
 
-These terms and conditions outline the rules and regulations for the use of OmniVideo's Website.
+// Mock terms of service content
+const mockTermsOfService: LegalDocument = {
+  title: "Terms of Service",
+  content: `# Terms of Service
 
-By accessing this website we assume you accept these terms and conditions. Do not continue to use OmniVideo if you do not agree to take all of the terms and conditions stated on this page.
+## 1. Acceptance of Terms
 
-### License
+By accessing and using OmniVideo services, you agree to be bound by these Terms of Service.
 
-Unless otherwise stated, OmniVideo and/or its licensors own the intellectual property rights for all material on OmniVideo. All intellectual property rights are reserved. You may access this from OmniVideo for your own personal use subjected to restrictions set in these terms and conditions.
+## 2. Description of Service
 
-### Restrictions
+OmniVideo provides video downloading services from various platforms for personal use only.
 
-You are specifically restricted from all of the following:
-- publishing any Website material in any other media;
-- selling, sublicensing and/or otherwise commercializing any Website material;
-- publicly performing and/or showing any Website material;
-- using this Website in any way that is or may be damaging to this Website;
-- using this Website in any way that impacts user access to this Website;
-- using this Website contrary to applicable laws and regulations, or in any way may cause harm to the Website, or to any person or business entity;
-- engaging in any data mining, data harvesting, data extracting or any other similar activity in relation to this Website;
+## 3. User Responsibilities
 
-### Your Content
+Users must comply with copyright laws and platform terms of service when using our services.
 
-In these Website Standard Terms and Conditions, "Your Content" shall mean any audio, video text, images or other material you choose to display on this Website. By displaying Your Content, you grant OmniVideo a non-exclusive, worldwide irrevocable, sub licensable license to use, reproduce, adapt, publish, translate and distribute it in any and all media.
+## 4. Intellectual Property Rights
 
-Your Content must be your own and must not be invading any third-party's rights. OmniVideo reserves the right to remove any of Your Content from this Website at any time without notice.`,
-  lastUpdated: new Date().toISOString(),
+Users agree not to use downloaded content for commercial purposes without proper licensing.
+
+## 5. Privacy Policy
+
+Our Privacy Policy governs the collection and use of personal information.
+
+## 6. Limitation of Liability
+
+OmniVideo is not responsible for misuse of downloaded content by users.
+
+## 7. Changes to Terms
+
+We reserve the right to modify these terms at any time with notice to users.
+
+## 8. Termination
+
+We may terminate service access for violations of these terms.
+
+## 9. Governing Law
+
+These terms are governed by applicable laws.
+
+## 10. Contact Information
+
+For questions about these terms, please contact support@omnivideo.example.com.`,
+  lastUpdated: new Date().toISOString()
 };
 
-const mockPrivacyPolicy = {
-  id: '1',
-  title: 'Privacy Policy',
-  content: `
-## Privacy Policy
+// Mock privacy policy content
+const mockPrivacyPolicy: LegalDocument = {
+  title: "Privacy Policy",
+  content: `# Privacy Policy
 
-OmniVideo ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how your personal information is collected, used, and disclosed by OmniVideo.
+## Introduction
 
-### Information We Collect
+This Privacy Policy explains how OmniVideo collects, uses, and protects your personal information.
 
-We collect several different types of information for various purposes to provide and improve our Service to you:
+## Information We Collect
 
-#### Personal Data
+We collect information you provide directly, such as account details and usage information.
 
-While using our Service, we may ask you to provide us with certain personally identifiable information that can be used to contact or identify you ("Personal Data"). Personally identifiable information may include, but is not limited to:
-- Email address
-- First name and last name
-- Phone number
-- Address, State, Province, ZIP/Postal code, City
-- Cookies and Usage Data
+## How We Use Your Information
 
-#### Usage Data
+Your information helps us provide, improve, and protect our services.
 
-We may also collect information on how the Service is accessed and used ("Usage Data"). This Usage Data may include information such as your computer's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that you visit, the time and date of your visit, the time spent on those pages, unique device identifiers and other diagnostic data.
+## Information Sharing and Disclosure
 
-### Use of Data
+We do not sell your personal information to third parties.
 
-OmniVideo uses the collected data for various purposes:
-- To provide and maintain our Service
-- To notify you about changes to our Service
-- To provide customer support
-- To gather analysis or valuable information so that we can improve our Service
-- To monitor the usage of our Service
-- To detect, prevent and address technical issues`,
-  lastUpdated: new Date().toISOString(),
+## Security
+
+We implement security measures to protect your personal information.
+
+## Your Rights
+
+You have rights regarding your personal data, including access and deletion.
+
+## Changes to This Policy
+
+We may update this policy periodically with notice to users.
+
+## Contact Us
+
+If you have questions about this policy, please contact privacy@omnivideo.example.com.`,
+  lastUpdated: new Date().toISOString()
 };
 
-const mockCookiePolicy = {
-  id: '1',
-  title: 'Cookie Policy',
-  content: `
-## Cookie Policy
+// Mock cookie policy content
+const mockCookiePolicy: LegalDocument = {
+  title: "Cookie Policy",
+  content: `# Cookie Policy
 
-This Cookie Policy explains how OmniVideo ("we", "us", and "ours") uses cookies and similar technologies to recognize you when you visit our website. It explains what these technologies are and why we use them, as well as your rights to control our use of them.
+## What Are Cookies
 
-### What are cookies?
+Cookies are small text files stored on your device when you visit our website.
 
-Cookies are small data files that are placed on your computer or mobile device when you visit a website. Cookies are widely used by website owners in order to make their websites work, or to work more efficiently, as well as to provide reporting information.
+## How We Use Cookies
 
-Cookies set by the website owner (in this case, OmniVideo) are called "first party cookies". Cookies set by parties other than the website owner are called "third party cookies". Third party cookies enable third party features or functionality to be provided on or through the website (e.g. like advertising, interactive content and analytics). The parties that set these third party cookies can recognize your computer both when it visits the website in question and also when it visits certain other websites.
+We use cookies to enhance your browsing experience and analyze site traffic.
 
-### Why do we use cookies?
+## Types of Cookies We Use
 
-We use first party and third party cookies for several reasons. Some cookies are required for technical reasons in order for our Websites to operate, and we refer to these as "essential" or "strictly necessary" cookies. Other cookies also enable us to track and target the interests of our users to enhance the experience on our Websites and Subscription Service. For example, OmniVideo keeps track of the Websites and pages you visit within OmniVideo, in order to determine what portion of the OmniVideo Website or Subscription Service is the most popular or most used. This data is used to deliver customized content and promotions within the OmniVideo Website and Subscription Service to customers whose behavior indicates that they are interested in a particular subject area.`,
-  lastUpdated: new Date().toISOString(),
+### Essential Cookies
+Required for basic website functionality.
+
+### Performance Cookies
+Help us understand how visitors interact with our website.
+
+### Functionality Cookies
+Allow us to remember your preferences.
+
+### Targeting/Advertising Cookies
+Used to deliver relevant advertisements.
+
+## Managing Cookies
+
+Most web browsers allow cookie control through their settings.
+
+## Changes to This Policy
+
+We may update this policy periodically with notice to users.
+
+## Contact Us
+
+If you have questions about our cookie usage, please contact cookies@omnivideo.example.com.`,
+  lastUpdated: new Date().toISOString()
 };
 
-const mockContactInfo = {
-  id: '1',
-  companyName: 'OmniVideo, Inc.',
-  address: '123 Tech Street, San Francisco, CA 94105',
-  email: 'support@omnivideo.example.com',
-  phone: '+1 (555) 123-4567',
-  supportHours: 'Monday - Friday, 9am - 5pm PST',
-  socialMedia: [
-    { platform: 'Twitter', handle: '@omnivideo', url: 'https://twitter.com/omnivideo' },
-    { platform: 'Facebook', handle: 'OmniVideo', url: 'https://facebook.com/omnivideo' },
-    { platform: 'Instagram', handle: '@omnivideo', url: 'https://instagram.com/omnivideo' },
-  ],
-  formSubmissionEmail: 'contact@omnivideo.example.com',
-  formCcEmail: 'records@omnivideo.example.com',
+// Mock contact information
+const mockContactInfo: ContactInfo = {
+  companyName: "OmniVideo, Inc.",
+  address: "123 Tech Lane, San Francisco, CA 94107",
+  email: "contact@omnivideo.example.com",
+  phone: "+1 (555) 123-4567",
+  supportHours: "Monday-Friday, 9:00 AM - 6:00 PM PST",
+  formSubmissionEmail: "support@omnivideo.example.com"
 };
 
-// Legal service for the admin interface
+// Legal service for terms, privacy policy, etc.
 export const legalService = {
-  // Get Terms of Service
+  // Get terms of service
   getTermsOfService: async () => {
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 600));
+    
     return { data: mockTermsOfService, success: true };
   },
-
-  // Update Terms of Service
+  
+  // Update terms of service
   updateTermsOfService: async (content: string) => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 800));
     
-    const updatedTerms = { 
-      ...mockTermsOfService, 
-      content, 
-      lastUpdated: new Date().toISOString() 
+    const updatedTerms = {
+      ...mockTermsOfService,
+      content,
+      lastUpdated: new Date().toISOString()
     };
     
-    return { data: updatedTerms, success: true, message: 'Terms of Service updated successfully' };
+    return { data: updatedTerms, success: true };
   },
-
-  // Get Privacy Policy
+  
+  // Get privacy policy
   getPrivacyPolicy: async () => {
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 550));
+    
     return { data: mockPrivacyPolicy, success: true };
   },
-
-  // Update Privacy Policy
+  
+  // Update privacy policy
   updatePrivacyPolicy: async (content: string) => {
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise(resolve => setTimeout(resolve, 750));
     
-    const updatedPolicy = { 
-      ...mockPrivacyPolicy, 
-      content, 
-      lastUpdated: new Date().toISOString() 
+    const updatedPolicy = {
+      ...mockPrivacyPolicy,
+      content,
+      lastUpdated: new Date().toISOString()
     };
     
-    return { data: updatedPolicy, success: true, message: 'Privacy Policy updated successfully' };
+    return { data: updatedPolicy, success: true };
   },
-
-  // Get Cookie Policy
+  
+  // Get cookie policy
   getCookiePolicy: async () => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
+    
     return { data: mockCookiePolicy, success: true };
   },
-
-  // Update Cookie Policy
+  
+  // Update cookie policy
   updateCookiePolicy: async (content: string) => {
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise(resolve => setTimeout(resolve, 700));
     
-    const updatedPolicy = { 
-      ...mockCookiePolicy, 
-      content, 
-      lastUpdated: new Date().toISOString() 
+    const updatedPolicy = {
+      ...mockCookiePolicy,
+      content,
+      lastUpdated: new Date().toISOString()
     };
     
-    return { data: updatedPolicy, success: true, message: 'Cookie Policy updated successfully' };
+    return { data: updatedPolicy, success: true };
   },
-
-  // Get Contact Information
+  
+  // Get contact information
   getContactInfo: async () => {
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 450));
+    
     return { data: mockContactInfo, success: true };
   },
-
-  // Update Contact Information
-  updateContactInfo: async (contactInfo: typeof mockContactInfo) => {
+  
+  // Update contact information
+  updateContactInfo: async (info: Partial<ContactInfo>) => {
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise(resolve => setTimeout(resolve, 650));
     
-    const updatedInfo = { 
-      ...mockContactInfo,
-      ...contactInfo
-    };
+    const updatedInfo = { ...mockContactInfo, ...info };
     
-    return { data: updatedInfo, success: true, message: 'Contact information updated successfully' };
-  },
+    return { data: updatedInfo, success: true };
+  }
 };

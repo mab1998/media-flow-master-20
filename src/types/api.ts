@@ -186,3 +186,45 @@ export type SiteConfig = {
   faqItems: FAQItem[];
   lastUpdated: string;
 };
+
+// Payment and Stripe Types
+export type StripeConfig = {
+  publishableKey: string;
+  webhookSecret: string;
+  enabledPaymentMethods: string[];
+  testMode: boolean;
+  successUrl: string;
+  cancelUrl: string;
+  allowPromotionCodes: boolean;
+  collectBillingAddress: boolean;
+  collectShippingAddress: boolean;
+  lastUpdated: string;
+};
+
+export type PaymentSession = {
+  id: string;
+  customerId: string;
+  customerEmail: string;
+  amount: number;
+  currency: string;
+  status: string;
+  createdAt: string;
+  paymentMethod: string;
+  planId: string;
+};
+
+// Legal Content Types
+export type LegalDocument = {
+  title: string;
+  content: string;
+  lastUpdated: string;
+};
+
+export type ContactInfo = {
+  companyName: string;
+  address: string;
+  email: string;
+  phone: string;
+  supportHours: string;
+  formSubmissionEmail: string;
+};

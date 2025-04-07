@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,21 +11,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2 } from 'lucide-react';
+import { Loader2, DollarSign } from 'lucide-react';
 import { api } from '@/api/mockApi';
 import { useApiRequest } from '@/api/mockApi';
+import { StripeConfig } from '@/types/api';
 
 const AdminSettingsPage: React.FC = () => {
   const [isLoadingTerms, setIsLoadingTerms] = useState(true);
   const [isLoadingPrivacy, setIsLoadingPrivacy] = useState(true);
   const [isLoadingCookie, setIsLoadingCookie] = useState(true);
   const [isLoadingContact, setIsLoadingContact] = useState(true);
+  const [isLoadingStripe, setIsLoadingStripe] = useState(true);
   
   const [termsContent, setTermsContent] = useState('');
   const [privacyContent, setPrivacyContent] = useState('');
   const [cookieContent, setCookieContent] = useState('');
   const [contactInfo, setContactInfo] = useState<any>(null);
+  const [stripeConfig, setStripeConfig] = useState<StripeConfig | null>(null);
   
+  // Fetch Terms of Service
   useEffect(() => {
     const fetchTerms = async () => {
       try {
@@ -43,6 +48,7 @@ const AdminSettingsPage: React.FC = () => {
     fetchTerms();
   }, []);
   
+  // Fetch Privacy Policy
   useEffect(() => {
     const fetchPrivacy = async () => {
       try {
@@ -61,6 +67,7 @@ const AdminSettingsPage: React.FC = () => {
     fetchPrivacy();
   }, []);
   
+  // Fetch Cookie Policy
   useEffect(() => {
     const fetchCookie = async () => {
       try {
@@ -79,6 +86,7 @@ const AdminSettingsPage: React.FC = () => {
     fetchCookie();
   }, []);
   
+  // Fetch Contact Info
   useEffect(() => {
     const fetchContactInfo = async () => {
       try {
@@ -96,7 +104,27 @@ const AdminSettingsPage: React.FC = () => {
 
     fetchContactInfo();
   }, []);
+  
+  // Fetch Stripe Config
+  useEffect(() => {
+    const fetchStripeConfig = async () => {
+      try {
+        setIsLoadingStripe(true);
+        const response = await api.getStripeConfig();
+        if (response.success) {
+          setStripeConfig(response.data);
+        }
+      } catch (error) {
+        console.error("Failed to load Stripe configuration:", error);
+      } finally {
+        setIsLoadingStripe(false);
+      }
+    };
 
+    fetchStripeConfig();
+  }, []);
+
+  // Handle saving general settings
   const handleSaveGeneralSettings = () => {
     toast({
       title: "Settings Saved",
@@ -104,6 +132,7 @@ const AdminSettingsPage: React.FC = () => {
     });
   };
 
+  // Handle saving notification settings
   const handleSaveNotificationSettings = () => {
     toast({
       title: "Settings Saved",
@@ -111,6 +140,7 @@ const AdminSettingsPage: React.FC = () => {
     });
   };
 
+  // Handle saving API settings
   const handleSaveAPISettings = () => {
     toast({
       title: "Settings Saved",
@@ -118,6 +148,7 @@ const AdminSettingsPage: React.FC = () => {
     });
   };
 
+  // Handle saving SMTP settings
   const handleSaveSmtpSettings = () => {
     toast({
       title: "Settings Saved",
@@ -125,6 +156,7 @@ const AdminSettingsPage: React.FC = () => {
     });
   };
   
+  // Handle saving Terms of Service
   const handleSaveTermsOfService = async () => {
     try {
       const response = await api.updateTermsOfService(termsContent);
@@ -143,6 +175,7 @@ const AdminSettingsPage: React.FC = () => {
     }
   };
   
+  // Handle saving Privacy Policy
   const handleSavePrivacyPolicy = async () => {
     try {
       const response = await api.updatePrivacyPolicy(privacyContent);
@@ -161,6 +194,7 @@ const AdminSettingsPage: React.FC = () => {
     }
   };
   
+  // Handle saving Cookie Policy
   const handleSaveCookiePolicy = async () => {
     try {
       const response = await api.updateCookiePolicy(cookieContent);
@@ -179,6 +213,7 @@ const AdminSettingsPage: React.FC = () => {
     }
   };
   
+  // Handle saving Contact Info
   const handleSaveContactInfo = async () => {
     try {
       const response = await api.updateContactInfo(contactInfo);
@@ -197,11 +232,46 @@ const AdminSettingsPage: React.FC = () => {
     }
   };
   
+  // Handle contact form field changes
   const handleContactChange = (field: string, value: string) => {
     setContactInfo(prev => ({
       ...prev,
       [field]: value
     }));
+  };
+  
+  // Handle Stripe config field changes
+  const handleStripeConfigChange = (field: keyof StripeConfig, value: any) => {
+    if (!stripeConfig) return;
+    
+    setStripeConfig(prev => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        [field]: value
+      };
+    });
+  };
+  
+  // Handle saving Stripe config
+  const handleSaveStripeConfig = async () => {
+    if (!stripeConfig) return;
+    
+    try {
+      const response = await api.updateStripeConfig(stripeConfig);
+      if (response.success) {
+        toast({
+          title: "Stripe Configuration Updated",
+          description: "Your payment settings have been updated successfully."
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update Stripe configuration."
+      });
+    }
   };
 
   return (
@@ -217,6 +287,7 @@ const AdminSettingsPage: React.FC = () => {
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="api">API</TabsTrigger>
           <TabsTrigger value="smtp">SMTP</TabsTrigger>
+          <TabsTrigger value="stripe">Stripe Payments</TabsTrigger>
           <TabsTrigger value="terms">Terms of Service</TabsTrigger>
           <TabsTrigger value="privacy">Privacy Policy</TabsTrigger>
           <TabsTrigger value="cookie">Cookie Policy</TabsTrigger>
@@ -455,6 +526,155 @@ const AdminSettingsPage: React.FC = () => {
               <div className="flex justify-end mt-4">
                 <Button onClick={handleSaveSmtpSettings}>Save Changes</Button>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="stripe">
+          <Card>
+            <CardHeader>
+              <CardTitle>Stripe Payment Settings</CardTitle>
+              <CardDescription>Configure payment processing with Stripe</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {isLoadingStripe ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : stripeConfig ? (
+                <>
+                  <div className="grid grid-cols-1 gap-6">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="test-mode">Test Mode</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Use Stripe test environment for development
+                        </p>
+                      </div>
+                      <Switch 
+                        id="test-mode" 
+                        checked={stripeConfig.testMode}
+                        onCheckedChange={(checked) => handleStripeConfigChange('testMode', checked)} 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="publishable-key">
+                        {stripeConfig.testMode ? 'Test' : 'Live'} Publishable Key
+                      </Label>
+                      <Input 
+                        id="publishable-key" 
+                        value={stripeConfig.publishableKey} 
+                        onChange={(e) => handleStripeConfigChange('publishableKey', e.target.value)}
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        Your Stripe publishable key starting with 'pk_'
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="webhook-secret">
+                        {stripeConfig.testMode ? 'Test' : 'Live'} Webhook Secret
+                      </Label>
+                      <Input 
+                        id="webhook-secret" 
+                        value={stripeConfig.webhookSecret}
+                        onChange={(e) => handleStripeConfigChange('webhookSecret', e.target.value)}
+                        type="password" 
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        Your Stripe webhook secret starting with 'whsec_'
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="grid grid-cols-1 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="success-url">Success URL</Label>
+                      <Input 
+                        id="success-url" 
+                        value={stripeConfig.successUrl}
+                        onChange={(e) => handleStripeConfigChange('successUrl', e.target.value)}
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        Where to redirect customers after successful payment
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="cancel-url">Cancel URL</Label>
+                      <Input 
+                        id="cancel-url" 
+                        value={stripeConfig.cancelUrl}
+                        onChange={(e) => handleStripeConfigChange('cancelUrl', e.target.value)}
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        Where to redirect customers when they cancel checkout
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="grid grid-cols-1 gap-6">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="promotion-codes">Allow Promotion Codes</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Enable promotion code field at checkout
+                        </p>
+                      </div>
+                      <Switch 
+                        id="promotion-codes"
+                        checked={stripeConfig.allowPromotionCodes}
+                        onCheckedChange={(checked) => handleStripeConfigChange('allowPromotionCodes', checked)}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="billing-address">Collect Billing Address</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Request billing address during checkout
+                        </p>
+                      </div>
+                      <Switch 
+                        id="billing-address"
+                        checked={stripeConfig.collectBillingAddress}
+                        onCheckedChange={(checked) => handleStripeConfigChange('collectBillingAddress', checked)}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="shipping-address">Collect Shipping Address</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Request shipping address during checkout
+                        </p>
+                      </div>
+                      <Switch 
+                        id="shipping-address"
+                        checked={stripeConfig.collectShippingAddress}
+                        onCheckedChange={(checked) => handleStripeConfigChange('collectShippingAddress', checked)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end">
+                    <Button 
+                      onClick={handleSaveStripeConfig}
+                      className="flex items-center"
+                    >
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      Save Payment Settings
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <p>Failed to load Stripe configuration. Please try again.</p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

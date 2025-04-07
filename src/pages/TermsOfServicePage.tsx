@@ -5,9 +5,10 @@ import { api } from '@/api/mockApi';
 import { Skeleton } from '@/components/ui/skeleton';
 import Markdown from 'react-markdown';
 import { Loader2 } from 'lucide-react';
+import { LegalDocument } from '@/types/api';
 
 const TermsOfServicePage: React.FC = () => {
-  const [terms, setTerms] = useState<{title: string, content: string} | null>(null);
+  const [terms, setTerms] = useState<LegalDocument | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

@@ -4,9 +4,10 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { api } from '@/api/mockApi';
 import { Skeleton } from '@/components/ui/skeleton';
 import Markdown from 'react-markdown';
+import { LegalDocument } from '@/types/api';
 
 const PrivacyPolicyPage: React.FC = () => {
-  const [policy, setPolicy] = useState<{title: string, content: string} | null>(null);
+  const [policy, setPolicy] = useState<LegalDocument | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

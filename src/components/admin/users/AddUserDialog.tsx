@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -12,17 +13,19 @@ type AddUserDialogProps = {
   isOpen: boolean;
   onClose: () => void;
   onUserAdded: () => void;
+  onSuccess?: () => void; // Added this property
 };
 
 export const AddUserDialog: React.FC<AddUserDialogProps> = ({
   isOpen,
   onClose,
   onUserAdded,
+  onSuccess,
 }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [plan, setPlan] = useState('free');
+  const [plan, setPlan] = useState<"Free" | "Pro" | "Unlimited">('Free');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,41 +45,38 @@ export const AddUserDialog: React.FC<AddUserDialogProps> = ({
       setIsSubmitting(true);
       
       // Call API to add user
-      const response = await api.addUser({
+      await api.addUser({
         name,
         email,
         password,
         plan,
       });
       
-      if (response.success) {
-        toast({
-          title: "Success",
-          description: "User has been added successfully.",
-        });
-        
-        // Reset form
-        setName('');
-        setEmail('');
-        setPassword('');
-        setPlan('free');
-        
-        // Close dialog and refresh user list
-        onClose();
-        onUserAdded();
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: response.message || "Failed to add user. Please try again.",
-        });
+      toast({
+        title: "Success",
+        description: "User has been added successfully.",
+      });
+      
+      // Reset form
+      setName('');
+      setEmail('');
+      setPassword('');
+      setPlan('Free');
+      
+      // Close dialog and refresh user list
+      onClose();
+      onUserAdded();
+      
+      // Call the onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
       }
     } catch (error) {
       console.error("Error adding user:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "An unexpected error occurred. Please try again.",
+        description: error instanceof Error ? error.message : "An unexpected error occurred. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -131,15 +131,15 @@ export const AddUserDialog: React.FC<AddUserDialogProps> = ({
           
           <div className="space-y-2">
             <Label htmlFor="plan">Subscription Plan</Label>
-            <Select value={plan} onValueChange={setPlan}>
+            <Select value={plan} onValueChange={(value: "Free" | "Pro" | "Unlimited") => setPlan(value)}>
               <SelectTrigger id="plan">
                 <SelectValue placeholder="Select a plan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="free">Free</SelectItem>
-                <SelectItem value="basic">Basic</SelectItem>
-                <SelectItem value="premium">Premium</SelectItem>
-                <SelectItem value="enterprise">Enterprise</SelectItem>
+                <SelectItem value="Free">Free</SelectItem>
+                <SelectItem value="Pro">Basic</SelectItem>
+                <SelectItem value="Premium">Premium</SelectItem>
+                <SelectItem value="Unlimited">Enterprise</SelectItem>
               </SelectContent>
             </Select>
           </div>

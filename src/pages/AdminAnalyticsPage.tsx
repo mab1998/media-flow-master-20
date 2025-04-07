@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,11 +11,24 @@ import { Loader2 } from 'lucide-react';
 import { api } from '@/api/mockApi';
 import { useToast } from '@/hooks/use-toast';
 
+interface AnalyticsData {
+  totalUsers: number;
+  activeUsers: number;
+  totalDownloads: number;
+  revenue: number;
+  conversionRate: number;
+  userSignupData: any;
+  downloadsByPlatform: any;
+  revenueData: any;
+  conversionRateData: any;
+  planDistribution: Record<string, number>;
+}
+
 const AdminAnalyticsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('7d');
   const [dateRange, setDateRange] = useState({ from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), to: new Date() });
-  const [analyticsData, setAnalyticsData] = useState(null);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const { toast } = useToast();
 
   // Mock data for charts
@@ -85,7 +99,7 @@ const AdminAnalyticsPage = () => {
     try {
       setIsLoading(true);
       // In a real app, you would pass the timeRange or dateRange to the API
-      const response = await new Promise(resolve => {
+      const response = await new Promise<{success: boolean, data: AnalyticsData}>(resolve => {
         setTimeout(() => {
           resolve({
             success: true,

@@ -22,6 +22,7 @@ const AdminUsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [showAddUserDialog, setShowAddUserDialog] = useState(false);
   
   const { execute: fetchUsers, isLoading, data } = useApiRequest(
     api.getUsers,
@@ -73,8 +74,17 @@ const AdminUsersPage = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Users Management</h1>
-          <AddUserDialog onSuccess={handleRefresh} />
+          <Button onClick={() => setShowAddUserDialog(true)}>
+            <UserPlus className="h-4 w-4 mr-2" />
+            Add User
+          </Button>
         </div>
+        
+        <AddUserDialog 
+          isOpen={showAddUserDialog}
+          onClose={() => setShowAddUserDialog(false)}
+          onUserAdded={handleRefresh}
+        />
         
         <Card>
           <CardHeader>

@@ -10,6 +10,7 @@ import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { Loader2 } from 'lucide-react';
 import { api } from '@/api/mockApi';
 import { useToast } from '@/hooks/use-toast';
+import { DateRange } from 'react-day-picker';
 
 interface AnalyticsData {
   totalUsers: number;
@@ -27,7 +28,10 @@ interface AnalyticsData {
 const AdminAnalyticsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('7d');
-  const [dateRange, setDateRange] = useState({ from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), to: new Date() });
+  const [dateRange, setDateRange] = useState<DateRange>({ 
+    from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), 
+    to: new Date() 
+  });
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const { toast } = useToast();
 
@@ -162,6 +166,11 @@ const AdminAnalyticsPage = () => {
     setDateRange({ from: fromDate, to: now });
   };
 
+  // Handle date range changes from the DateRangePicker component
+  const handleDateRangeChange = (range: DateRange) => {
+    setDateRange(range);
+  };
+
   return (
     <AdminLayout>
       <div className="mb-6">
@@ -185,7 +194,7 @@ const AdminAnalyticsPage = () => {
           <span className="text-sm text-muted-foreground">or</span>
           <DateRangePicker
             value={dateRange}
-            onChange={setDateRange}
+            onChange={handleDateRangeChange}
           />
         </div>
         <Button onClick={fetchAnalyticsData} variant="outline" size="sm">
